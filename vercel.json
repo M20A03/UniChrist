@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "name": "unichrist-campus-portal",
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/index.html"
+    }
+  ]
+}
