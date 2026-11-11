@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UniChrist - Integrated Smart Campus ERP & Location Services</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header>
+        <div class="brand-container">
+            <div class="logo-emblem">CU</div>
+            <div class="brand-title">
+                <h1>CHRIST (Deemed to be University)</h1>
+                <p>UniChrist — Smart Campus Management System (BCA381-4 DBMS Project)</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <a href="/swagger" target="_blank" class="swagger-badge">
+                <span class="pulse-dot"></span> Backend REST API (Swagger)
+            </a>
+            <div class="user-profile">
+                <div class="user-avatar" id="navAvatar">MR</div>
+                <div class="user-info">
+                    <div class="name" id="navUserName">Mayank Raj Gupta</div>
+                    <div class="role" id="navUserRole">Lead • 4BCA-B (2543115)</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <button class="nav-btn active" onclick="switchTab('tab-faculty', this)">📍 Faculty Schedule Locator</button>
+        <button class="nav-btn" onclick="switchTab('tab-map', this)">🗺️ Campus Indoor Map</button>
+        <button class="nav-btn" onclick="switchTab('tab-cafeteria', this)">🍽️ Cafeteria & Pre-Ordering</button>
+        <button class="nav-btn" onclick="switchTab('tab-grievance', this)">📝 Grievance Redressal</button>
+        <button class="nav-btn" onclick="switchTab('tab-parking', this)">🚗 Smart Parking</button>
+        <button class="nav-btn" onclick="switchTab('tab-library', this)">📚 Library OPAC</button>
+    </nav>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <footer>
+        <p><strong>UniChrist: Integrated Campus Life & Location Services Portal</strong></p>
+        <p>CHRIST (Deemed to be University), Bangalore Yeshwanthpur Campus | Department of Computer Science (4BCA-B)</p>
+        <p>Guide: <strong>Dr Hemanth K S</strong> | Developers: Mayank Raj Gupta (2543115), Sonti Sri Lakshmi Aslesha (2543140), Aadiya Naresh (2543163)</p>
+        <p style="margin-top: 6px; font-size: 11px; opacity: 0.8;">Powered by <strong>C# .NET 8 ASP.NET Core &amp; MySQL Database</strong></p>
+    </footer>
+
+    <script src="~/js/site.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+

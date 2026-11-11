@@ -1,0 +1,240 @@
+@{
+    ViewData["Title"] = "UniChrist Smart Campus Management";
+}
+
+<!-- TAB 1: FACULTY SCHEDULE & LOCATION LOCATOR -->
+<div id="tab-faculty" class="tab-content active">
+    <div class="card">
+        <div class="card-header">
+            <h3>📍 Faculty Schedule &amp; Real-Time Location Lookup (Guide-Approved Timetable Engine)</h3>
+            <span class="badge badge-success">● Engine Live</span>
+        </div>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 18px;">
+            This engine checks the university faculty weekly timetable against current period hours. If the teacher is currently taking a lecture or lab, it displays their active room; if they have a free hour, it directs students to their designated cabin/staff room.
+        </p>
+
+        <!-- Test Simulation Control Bar -->
+        <div style="background: #F8FAFC; border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; margin-bottom: 20px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 13px; font-weight: 700; color: var(--primary);">⏱️ Live Schedule Simulator:</span>
+                <button class="btn btn-outline" onclick="activeDay='MONDAY'; activeTime='10:00:00'; loadFacultyStatus();">Mon 10:00 AM (Class)</button>
+                <button class="btn btn-outline" onclick="activeDay='MONDAY'; activeTime='12:00:00'; loadFacultyStatus();">Mon 12:00 PM (Lab)</button>
+                <button class="btn btn-outline" onclick="activeDay='MONDAY'; activeTime='15:30:00'; loadFacultyStatus();">Mon 03:30 PM (Cabin)</button>
+                <button class="btn btn-outline" onclick="activeDay=''; activeTime=''; loadFacultyStatus();">↺ System Clock</button>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn btn-primary" onclick="simulateStatus(3, 'IN_MEETING', 'HOD Academic Review Committee')">
+                    Meeting Override (Dr Hemanth K S)
+                </button>
+            </div>
+        </div>
+
+        <div id="facultyList">
+            <!-- Populated dynamically via API -->
+        </div>
+    </div>
+</div>
+
+<!-- TAB 2: CAMPUS INDOOR MAP -->
+<div id="tab-map" class="tab-content">
+    <div class="card">
+        <div class="card-header">
+            <h3>🗺️ Interactive Multi-Floor Indoor Campus Directory</h3>
+            <span class="badge badge-primary">Bangalore Yeshwanthpur Campus</span>
+        </div>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+            High-density indoor map showing Block A and Block B rooms, computer labs, staff rooms, and faculty cabins.
+        </p>
+
+        <div class="grid-2">
+            <div style="background: #F8FAFC; border: 1px solid var(--border); border-radius: 8px; padding: 16px;">
+                <h4 style="color: var(--primary); margin-bottom: 12px;">🏢 Block A (Main Academic & Admin)</h4>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                    <div style="background: #FFFFFF; border: 1px solid var(--border); border-top: 4px solid var(--secondary); padding: 12px; border-radius: 6px;">
+                        <strong>Staff Room 304</strong>
+                        <p style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Floor 3 • Faculty Cabins (Dr Hemanth K S, Dr Deepa B G)</p>
+                    </div>
+                    <div style="background: #FFFFFF; border: 1px solid var(--border); border-top: 4px solid var(--primary); padding: 12px; border-radius: 6px;">
+                        <strong>Room 405 (Classroom)</strong>
+                        <p style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Floor 4 • BCA Classrooms</p>
+                    </div>
+                    <div style="background: #FFFFFF; border: 1px solid var(--border); border-top: 4px solid #8B5CF6; padding: 12px; border-radius: 6px;">
+                        <strong>Conference Room 102</strong>
+                        <p style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Floor 1 • HOD Office & Meetings</p>
+                    </div>
+                    <div style="background: #FFFFFF; border: 1px solid var(--border); border-top: 4px solid #10B981; padding: 12px; border-radius: 6px;">
+                        <strong>Campus Infirmary</strong>
+                        <p style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Ground Floor • Healthcare & First Aid</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: #F8FAFC; border: 1px solid var(--border); border-radius: 8px; padding: 16px;">
+                <h4 style="color: var(--primary); margin-bottom: 12px;">🏢 Block B (Labs & Research Complex)</h4>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                    <div style="background: #FFFFFF; border: 1px solid var(--border); border-top: 4px solid #10B981; padding: 12px; border-radius: 6px;">
+                        <strong>Lab 201 (DBMS Lab)</strong>
+                        <p style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Floor 2 • 60 High-Perf Workstations</p>
+                    </div>
+                    <div style="background: #FFFFFF; border: 1px solid var(--border); border-top: 4px solid #10B981; padding: 12px; border-radius: 6px;">
+                        <strong>Lab 202 (AI / Data Science)</strong>
+                        <p style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Floor 2 • GPU Computing Cluster</p>
+                    </div>
+                    <div style="background: #FFFFFF; border: 1px solid var(--border); border-top: 4px solid var(--secondary); padding: 12px; border-radius: 6px;">
+                        <strong>Campus Central Library</strong>
+                        <p style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Floor 1 & 2 • Digital Reading Hall</p>
+                    </div>
+                    <div style="background: #FFFFFF; border: 1px solid var(--border); border-top: 4px solid var(--primary); padding: 12px; border-radius: 6px;">
+                        <strong>Cafeteria & Bakery</strong>
+                        <p style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Ground Floor • Food Court</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TAB 3: SMART CAFETERIA & PRE-ORDERING -->
+<div id="tab-cafeteria" class="tab-content">
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-header">
+                <h3>🍽️ Cafeteria Menu &amp; Food Selection</h3>
+                <span class="badge badge-success">Kitchen Open</span>
+            </div>
+            <div id="cafeteriaMenu">
+                <!-- Populated via API -->
+            </div>
+        </div>
+
+        <div>
+            <div class="card">
+                <div class="card-header">
+                    <h3>🛍️ Your Pre-Order Tray</h3>
+                    <span id="cartTotal" style="font-size: 16px; font-weight: 800; color: var(--primary);">₹0.00</span>
+                </div>
+                <div id="cartSummary" style="min-height: 80px; margin-bottom: 16px;">
+                    <p style="font-size: 12px; color: var(--text-muted);">Your food tray is empty. Add items from the menu.</p>
+                </div>
+                <button class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px;" onclick="placeOrder()">
+                    Confirm Pre-Order &amp; Generate Token
+                </button>
+            </div>
+
+            <div id="tokenDisplayCard" class="card token-card" style="display: none;">
+                <p style="font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.85;">Live Cafeteria Token</p>
+                <div class="token-number" id="tokenNumDisplay">#102</div>
+                <h4 id="tokenVendorDisplay" style="color: #FFFFFF; font-size: 15px; margin-top: 4px;">Central Cafeteria</h4>
+                <p id="tokenTotalDisplay" style="font-size: 13px; color: #A7F3D0; margin-top: 8px;">Order Placed</p>
+                <p style="font-size: 11px; opacity: 0.7; margin-top: 10px;">Show this token on your phone when collecting your order at the counter.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TAB 4: GRIEVANCE REDRESSAL -->
+<div id="tab-grievance" class="tab-content">
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-header">
+                <h3>📝 Lodge Campus Grievance / Maintenance Request</h3>
+            </div>
+            <form id="grievanceForm" onsubmit="submitGrievanceForm(event)">
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select id="gCategory" class="form-control">
+                        <option value="CAMPUS_WIFI">Campus Wi-Fi &amp; Internet</option>
+                        <option value="CLASSROOM_INFRASTRUCTURE">Classroom Infrastructure / Projector</option>
+                        <option value="LAB_EQUIPMENT">Lab Equipment &amp; Workstations</option>
+                        <option value="CANTEEN_HYGIENE">Cafeteria Hygiene &amp; Service</option>
+                        <option value="WASHROOM_MAINTENANCE">Washroom &amp; Housekeeping</option>
+                        <option value="ACADEMIC_ADMINISTRATION">Academic Administration Desk</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Issue Subject</label>
+                    <input type="text" id="gSubject" class="form-control" placeholder="E.g., Lab 201 Workstation #14 LAN port damaged" required />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Detailed Description</label>
+                    <textarea id="gDesc" class="form-control" rows="3" placeholder="Provide details like room number, floor, or equipment ID" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Priority</label>
+                    <select id="gPriority" class="form-control">
+                        <option value="LOW">Low</option>
+                        <option value="MEDIUM" selected>Medium</option>
+                        <option value="HIGH">High</option>
+                        <option value="URGENT">Urgent (Emergency)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                    Submit Grievance to Helpdesk
+                </button>
+            </form>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>📋 Recent Campus Grievances &amp; SLA Status</h3>
+                <button class="btn btn-outline" style="padding: 4px 10px;" onclick="loadGrievances()">↺ Refresh</button>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Ticket ID</th>
+                        <th>Category</th>
+                        <th>Subject</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="grievanceTableBody">
+                    <!-- Populated via API -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- TAB 5: SMART PARKING -->
+<div id="tab-parking" class="tab-content">
+    <div class="card">
+        <div class="card-header">
+            <h3>🚗 Smart Campus Parking &amp; EV Charging Allocation</h3>
+            <span class="badge badge-primary">Block A &amp; Block B Basement</span>
+        </div>
+        
+        <div style="display: flex; gap: 24px; margin-bottom: 20px;">
+            <div>Total Slots: <strong id="parkTotal">0</strong></div>
+            <div style="color: var(--success);">Available: <strong id="parkAvail">0</strong></div>
+            <div style="color: var(--danger);">Occupied: <strong id="parkOcc">0</strong></div>
+        </div>
+
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">
+            💡 Click on any slot below to toggle occupancy (simulates automated barrier sensor).
+        </p>
+
+        <div class="parking-grid" id="parkingSlotsGrid">
+            <!-- Populated via API -->
+        </div>
+    </div>
+</div>
+
+<!-- TAB 6: LIBRARY OPAC -->
+<div id="tab-library" class="tab-content">
+    <div class="card">
+        <div class="card-header">
+            <h3>📚 Centralized Library Catalog (OPAC Search)</h3>
+            <span class="badge badge-success">Online Stack</span>
+        </div>
+        <div style="display: flex; gap: 10px; margin-bottom: 18px;">
+            <input type="text" id="bookSearchInput" class="form-control" placeholder="Search by Book Title, Author or ISBN (e.g. Database Systems, Navathe)..." onkeyup="if(event.key==='Enter') loadBooks();" />
+            <button class="btn btn-primary" onclick="loadBooks()">Search</button>
+        </div>
+        <div id="booksList">
+            <!-- Populated via API -->
+        </div>
+    </div>
+</div>
+
