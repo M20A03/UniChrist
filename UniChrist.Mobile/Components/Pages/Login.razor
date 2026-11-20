@@ -1,0 +1,76 @@
+@page "/login"
+@inject IAPIService Api
+@inject NavigationManager Nav
+
+<div class="page-container animate-fade-in">
+    <div class="login-card">
+        <div class="login-header">
+            <img src="images/christ_logo.png" alt="CHRIST University Logo" class="login-logo-img" />
+            <span class="login-campus-subtitle">BANGALORE YESHWANTHPUR CAMPUS</span>
+            <h1 class="login-title">UniChrist Access</h1>
+            <p class="login-desc">Sign in with your University Register Number or Faculty Email</p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(errorMsg))
+        {
+            <div class="error-banner">@errorMsg</div>
+        }
+
+        <div class="form-group">
+            <label>Register No. / Email</label>
+            <input type="text" @bind="loginReq.RegisterNumberOrEmail" placeholder="e.g. 2543115 or faculty@christuniversity.in" class="form-input" />
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" @bind="loginReq.Password" placeholder="••••••••" class="form-input" />
+        </div>
+
+        <button class="btn-primary" @onclick="HandleLogin" disabled="@isLoggingIn">
+            @(isLoggingIn ? "Authenticating..." : "Sign In to Portal")
+        </button>
+
+        <div class="login-hint">
+            <small>Demo Student: <code>2543115</code> | Password: <code>Christ@2026</code></small>
+        </div>
+    </div>
+</div>
+
+@code {
+    private LoginRequest loginReq = new()
+    {
+        RegisterNumberOrEmail = "2543115",
+        Password = "UniChristSecure2026!"
+    };
+    private bool isLoggingIn = false;
+    private string errorMsg = string.Empty;
+
+    private async Task HandleLogin()
+    {
+        if (string.IsNullOrWhiteSpace(loginReq.RegisterNumberOrEmail) || string.IsNullOrWhiteSpace(loginReq.Password))
+        {
+            errorMsg = "Please enter valid credentials.";
+            return;
+        }
+
+        isLoggingIn = true;
+        errorMsg = string.Empty;
+
+        try
+        {
+            var res = await Api.LoginAsync(loginReq);
+            if (res != null)
+            {
+                Nav.NavigateTo("/");
+            }
+            else
+            {
+                errorMsg = "Authentication failed. Check your credentials.";
+            }
+        }
+        finally
+        {
+            isLoggingIn = false;
+        }
+    }
+}

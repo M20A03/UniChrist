@@ -1,0 +1,79 @@
+@page "/library"
+@inject IAPIService Api
+
+<div class="page-container animate-fade-in">
+    <div class="page-header">
+        <h1 class="page-title">Library OPAC</h1>
+        <p class="page-subtitle">Online public access catalog and stock availability</p>
+    </div>
+
+    <div class="search-bar">
+        <input type="text" @bind="searchQuery" @bind:event="oninput" placeholder="Search book title, author, or ISBN..." class="search-input" />
+        <button class="btn-refresh" @onclick="SearchBooks">Search</button>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="loading-state">
+            <div class="spinner"></div>
+            <p>Querying central library repository...</p>
+        </div>
+    }
+    else if (!books.Any())
+    {
+        <div class="empty-state">
+            <p>No books found matching criteria.</p>
+        </div>
+    }
+    else
+    {
+        <div class="card-list">
+            @foreach (var b in books)
+            {
+                <div class="book-card">
+                    <div class="book-main">
+                        <h3 class="book-title">@b.Title</h3>
+                        <span class="book-author">by @b.Author</span>
+                        <div class="book-meta">
+                            <span>ISBN: @b.Isbn</span>
+                            @if (b.Category != null)
+                            {
+                                <span class="category-pill">@b.Category.CategoryName</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="book-stock">
+                        <span class="stock-num @(b.AvailableCopies > 0 ? "stock-ok" : "stock-empty")">
+                            @b.AvailableCopies / @b.TotalCopies
+                        </span>
+                        <span class="stock-label">Available</span>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private string searchQuery = string.Empty;
+    private bool isLoading = true;
+    private List<BookDto> books = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await SearchBooks();
+    }
+
+    private async Task SearchBooks()
+    {
+        isLoading = true;
+        try
+        {
+            books = await Api.SearchBooksAsync(searchQuery);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}

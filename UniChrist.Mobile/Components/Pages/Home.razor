@@ -1,0 +1,84 @@
+@page "/"
+@inject IAPIService Api
+
+<div class="page-container animate-fade-in">
+    <!-- Official University Branding Card -->
+    <div class="branding-hero-card">
+        <div class="hero-crest-wrap">
+            <img src="images/christ_logo.png" alt="CHRIST University Logo" class="hero-full-logo" />
+        </div>
+        <div class="hero-campus-badge">YESHWANTHPUR CAMPUS, BANGALORE</div>
+        <h1 class="hero-title">UniChrist Campus Portal</h1>
+        <p class="hero-desc">Integrated campus life and automated faculty schedule navigation engine without physical beacons.</p>
+    </div>
+
+    <!-- System Architecture Metrics -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <span class="metric-val">34</span>
+            <span class="metric-lbl">BCNF Tables</span>
+        </div>
+        <div class="metric-card">
+            <span class="metric-val">12</span>
+            <span class="metric-lbl">Live Modules</span>
+        </div>
+        <div class="metric-card">
+            <span class="metric-val">0</span>
+            <span class="metric-lbl">Hardware Beacons</span>
+        </div>
+    </div>
+
+    <!-- Academic Guide & Course Context Widget -->
+    <div class="academic-banner-widget">
+        <div class="academic-badge">DBMS PROJECT • BCA381-4</div>
+        <div class="academic-row">
+            <div>
+                <strong>Guide:</strong> Dr. Hemanth K S
+                <span class="text-subtle">(Associate Professor)</span>
+            </div>
+            <div>
+                <strong>Team:</strong> 12 (Team-14)
+            </div>
+        </div>
+    </div>
+
+    <h2 class="section-heading">Operational Modules</h2>
+
+    <div class="action-grid">
+        <a href="/faculty" class="action-card">
+            <div class="action-icon">⚲</div>
+            <div class="action-body">
+                <h3>Faculty Schedule Locator</h3>
+                <p>Live classroom / cabin resolution</p>
+            </div>
+            <span class="action-arrow">→</span>
+        </a>
+
+        <a href="/cafeteria" class="action-card">
+            <div class="action-icon">♨</div>
+            <div class="action-body">
+                <h3>Smart Cafeteria Pre-Order</h3>
+                <p>Digital wallet & live FIFO token queue</p>
+            </div>
+            <span class="action-arrow">→</span>
+        </a>
+
+        <a href="/grievance" class="action-card">
+            <div class="action-icon">⚠</div>
+            <div class="action-body">
+                <h3>Campus Grievance Desk</h3>
+                <p>Escalate Wi-Fi and facility issues</p>
+            </div>
+            <span class="action-arrow">→</span>
+        </a>
+
+        <a href="/library" class="action-card">
+            <div class="action-icon">📖</div>
+            <div class="action-body">
+                <h3>Central Library OPAC</h3>
+                <p>Real-time copy count & book search</p>
+            </div>
+            <span class="action-arrow">→</span>
+        </a>
+    </div>
+</div>

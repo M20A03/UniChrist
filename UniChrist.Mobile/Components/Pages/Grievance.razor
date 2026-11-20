@@ -1,0 +1,139 @@
+@page "/grievance"
+@inject IAPIService Api
+
+<div class="page-container animate-fade-in">
+    <div class="page-header">
+        <h1 class="page-title">Facility Grievances</h1>
+        <p class="page-subtitle">File and track infrastructure & campus Wi-Fi issues</p>
+    </div>
+
+    <div class="form-card">
+        <h2 class="form-title">Submit Ticket</h2>
+        
+        @if (!string.IsNullOrEmpty(statusMsg))
+        {
+            <div class="status-banner">@statusMsg</div>
+        }
+
+        <div class="form-group">
+            <label>Category</label>
+            <select @bind="newGrievance.Category" class="form-select">
+                <option value="CAMPUS_WIFI">Campus Wi-Fi / Network</option>
+                <option value="CLASSROOM_AV">Smart Board / Projector</option>
+                <option value="HVAC_ELECTRICAL">Air Conditioning / Lighting</option>
+                <option value="PLUMBING_WATER">Sanitation / Drinking Water</option>
+                <option value="LIBRARY_FACILITY">Library Amenities</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Priority</label>
+            <select @bind="newGrievance.Priority" class="form-select">
+                <option value="LOW">Low</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="HIGH">High (Urgent)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Subject</label>
+            <input type="text" @bind="newGrievance.TicketSubject" placeholder="Brief issue title" class="form-input" />
+        </div>
+
+        <div class="form-group">
+            <label>Description</label>
+            <textarea @bind="newGrievance.Description" rows="3" placeholder="Describe the problem and exact location..." class="form-textarea"></textarea>
+        </div>
+
+        <button class="btn-primary" @onclick="SubmitTicket" disabled="@isSubmitting">
+            @(isSubmitting ? "Filing..." : "Submit Ticket")
+        </button>
+    </div>
+
+    <h2 class="section-heading">My Active Tickets</h2>
+
+    @if (isLoadingTickets)
+    {
+        <div class="loading-state"><p>Loading ticket status...</p></div>
+    }
+    else if (!tickets.Any())
+    {
+        <div class="empty-state"><p>No previous grievances filed.</p></div>
+    }
+    else
+    {
+        <div class="card-list">
+            @foreach (var t in tickets)
+            {
+                <div class="ticket-card">
+                    <div class="card-top">
+                        <span class="ticket-id">#@t.TicketId • @t.Category</span>
+                        <span class="status-pill status-@t.Status.ToLower()">@t.Status</span>
+                    </div>
+                    <h3 class="ticket-subject">@t.TicketSubject</h3>
+                    <p class="ticket-desc">@t.Description</p>
+                    <span class="ticket-date">Filed on: @t.CreatedAt.ToShortDateString()</span>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private CreateGrievanceRequest newGrievance = new();
+    private List<GrievanceDto> tickets = new();
+    private bool isSubmitting = false;
+    private bool isLoadingTickets = true;
+    private string statusMsg = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTickets();
+    }
+
+    private async Task LoadTickets()
+    {
+        isLoadingTickets = true;
+        var studentId = Api.CurrentUser?.UserId ?? 1;
+        try
+        {
+            tickets = await Api.GetGrievancesAsync(studentId);
+        }
+        finally
+        {
+            isLoadingTickets = false;
+        }
+    }
+
+    private async Task SubmitTicket()
+    {
+        if (string.IsNullOrWhiteSpace(newGrievance.TicketSubject) || string.IsNullOrWhiteSpace(newGrievance.Description))
+        {
+            statusMsg = "Please provide both subject and description.";
+            return;
+        }
+
+        isSubmitting = true;
+        statusMsg = string.Empty;
+        newGrievance.StudentId = Api.CurrentUser?.UserId ?? 1;
+
+        try
+        {
+            var success = await Api.SubmitGrievanceAsync(newGrievance);
+            if (success)
+            {
+                statusMsg = "Ticket successfully filed with Facilities Department.";
+                newGrievance = new();
+                await LoadTickets();
+            }
+            else
+            {
+                statusMsg = "Failed to submit ticket. Please try again.";
+            }
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+}

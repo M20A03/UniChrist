@@ -1,0 +1,100 @@
+@page "/faculty"
+@inject IAPIService Api
+
+<div class="page-container animate-fade-in">
+    <div class="page-header">
+        <h1 class="page-title">Faculty Navigation</h1>
+        <p class="page-subtitle">Schedule-driven location tracking without physical beacons</p>
+    </div>
+
+    <div class="search-bar">
+        <input type="text" @bind="searchQuery" @bind:event="oninput" placeholder="Search professor name or department..." class="search-input" />
+        <button class="btn-refresh" @onclick="LoadFacultyList">↻</button>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="loading-state">
+            <div class="spinner"></div>
+            <p>Querying live campus timetables...</p>
+        </div>
+    }
+    else if (!filteredFaculties.Any())
+    {
+        <div class="empty-state">
+            <p>No faculty members found matching your search.</p>
+        </div>
+    }
+    else
+    {
+        <div class="card-list">
+            @foreach (var f in filteredFaculties)
+            {
+                <div class="faculty-card @GetBadgeClass(f.StatusBadge)">
+                    <div class="card-top">
+                        <div class="faculty-info">
+                            <h3 class="faculty-name">@f.FacultyName</h3>
+                            <span class="faculty-desig">@f.Designation • @f.DepartmentName</span>
+                        </div>
+                        <span class="status-pill @GetBadgeClass(f.StatusBadge)">@f.StatusBadge</span>
+                    </div>
+
+                    <div class="card-location">
+                        <span class="location-icon">📍</span>
+                        <div class="location-details">
+                            <strong>@f.CurrentLocationDescription</strong>
+                            @if (!string.IsNullOrEmpty(f.ActiveCourse))
+                            {
+                                <span class="course-text">Course: @f.ActiveCourse (@f.ActiveClassSection)</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <span>Cabin: @(f.CabinRoomNumber ?? "Main Staff Room")</span>
+                        <span class="last-sync">@f.LastUpdatedMessage</span>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private bool isLoading = true;
+    private string searchQuery = string.Empty;
+    private List<FacultyLocationDto> faculties = new();
+
+    private IEnumerable<FacultyLocationDto> filteredFaculties =>
+        string.IsNullOrWhiteSpace(searchQuery)
+            ? faculties
+            : faculties.Where(f =>
+                f.FacultyName.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                f.DepartmentName.Contains(searchQuery, StringComparison.OrdinalIgnoreCase));
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadFacultyList();
+    }
+
+    private async Task LoadFacultyList()
+    {
+        isLoading = true;
+        try
+        {
+            faculties = await Api.GetLiveFacultyStatusAsync();
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private string GetBadgeClass(string badge) => badge switch
+    {
+        "AVAILABLE" => "badge-available",
+        "IN_CLASS" => "badge-inclass",
+        "IN_MEETING" => "badge-meeting",
+        _ => "badge-default"
+    };
+}

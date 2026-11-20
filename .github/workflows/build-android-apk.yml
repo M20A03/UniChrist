@@ -1,0 +1,77 @@
+name: Build UniChrist Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'UniChrist.Mobile/**'
+      - '.github/workflows/build-android-apk.yml'
+
+jobs:
+  build-apk:
+    name: Compile & Sign Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17 (OpenJDK)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup .NET 9.0 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Install .NET MAUI Android Workload
+        run: |
+          dotnet workload install maui-android --source https://api.nuget.org/v3/index.json
+
+      - name: Generate Build Keystore
+        run: |
+          keytool -genkeypair -v \
+            -keystore unichrist_ci.keystore \
+            -alias unichrist \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -storepass "UniChristPass2026!" \
+            -keypass "UniChristPass2026!" \
+            -dname "CN=UniChrist Portal, OU=Computer Science, O=CHRIST University, L=Bangalore, ST=Karnataka, C=IN"
+
+      - name: Restore NuGet Dependencies
+        run: |
+          dotnet restore UniChrist.Mobile/UniChrist.Mobile.csproj
+
+      - name: Publish Android APK (Release)
+        run: |
+          dotnet publish UniChrist.Mobile/UniChrist.Mobile.csproj \
+            -f net9.0-android \
+            -c Release \
+            -p:AndroidKeyStore=true \
+            -p:AndroidSigningKeyStore=../unichrist_ci.keystore \
+            -p:AndroidSigningKeyAlias=unichrist \
+            -p:AndroidSigningKeyPass="UniChristPass2026!" \
+            -p:AndroidSigningStorePass="UniChristPass2026!" \
+            --no-restore
+
+      - name: Locate and Prepare Output APK
+        run: |
+          mkdir -p output_apk
+          find UniChrist.Mobile/bin/Release/net9.0-android/ -name "*.apk" -exec cp {} output_apk/UniChrist-Portal-Signed.apk \;
+          echo "Output files in output_apk:"
+          ls -la output_apk/
+
+      - name: Upload Signed APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: UniChrist-Android-APK
+          path: output_apk/UniChrist-Portal-Signed.apk
+          if-no-files-found: error
+          retention-days: 14

@@ -1,0 +1,134 @@
+@inherits LayoutComponentBase
+@inject IAPIService Api
+@inject NavigationManager Nav
+
+<div class="mobile-app-shell">
+    <!-- Top Header -->
+    <header class="mobile-header">
+        <div class="header-left">
+            <button class="btn-drawer-toggle" @onclick="ToggleDrawer" aria-label="Open Campus Drawer">
+                <span class="hamburger-icon">☰</span>
+            </button>
+            <div class="header-brand">
+                <img src="images/christ_logo.png" alt="CHRIST University Logo" class="header-christ-logo" />
+            </div>
+        </div>
+        <div class="header-actions">
+            @if (Api.CurrentUser != null)
+            {
+                <span class="user-badge" title="@Api.CurrentUser.Role">@Api.CurrentUser.FullName.Split(' ')[0]</span>
+            }
+            else
+            {
+                <NavLink href="/login" class="login-btn-top">Sign In</NavLink>
+            }
+        </div>
+    </header>
+
+    <!-- Slide-over Widgets Drawer -->
+    @if (isDrawerOpen)
+    {
+        <div class="drawer-overlay" @onclick="CloseDrawer"></div>
+        <aside class="campus-drawer animate-slide-right">
+            <div class="drawer-header">
+                <img src="images/christ_logo.png" alt="CHRIST (Deemed to be University)" class="drawer-logo" />
+                <button class="btn-drawer-close" @onclick="CloseDrawer">✕</button>
+            </div>
+
+            <div class="drawer-content">
+                <!-- Academic Identity Card -->
+                <div class="drawer-widget-card academic-card">
+                    <span class="widget-subtitle">DEPARTMENT OF COMPUTER SCIENCE</span>
+                    <h3 class="widget-title">BCA381-4 DBMS Project</h3>
+                    <div class="widget-details">
+                        <p><strong>Campus:</strong> Bangalore Yeshwanthpur</p>
+                        <p><strong>Guide:</strong> Dr. Hemanth K S</p>
+                        <p><strong>Team:</strong> 12 (Team-14)</p>
+                        <p><strong>Class:</strong> 4BCA-B</p>
+                    </div>
+                </div>
+
+                <!-- Database Architecture Widget -->
+                <div class="drawer-widget-card db-card">
+                    <span class="widget-subtitle">DATABASE ENGINE SPEC</span>
+                    <div class="db-stats">
+                        <div class="db-stat-item">
+                            <span class="db-stat-num">34</span>
+                            <span class="db-stat-name">BCNF Relations</span>
+                        </div>
+                        <div class="db-stat-item">
+                            <span class="db-stat-num">12</span>
+                            <span class="db-stat-name">Active Modules</span>
+                        </div>
+                    </div>
+                    <span class="db-tag">Zero Beacons Required</span>
+                </div>
+
+                <!-- Navigation Links List -->
+                <nav class="drawer-nav-list">
+                    <NavLink href="/" class="drawer-nav-item" Match="NavLinkMatch.All" @onclick="CloseDrawer">
+                        <span class="d-icon">☖</span>
+                        <span>Campus Dashboard</span>
+                    </NavLink>
+                    <NavLink href="/faculty" class="drawer-nav-item" @onclick="CloseDrawer">
+                        <span class="d-icon">⚲</span>
+                        <span>Faculty Live Tracker</span>
+                    </NavLink>
+                    <NavLink href="/cafeteria" class="drawer-nav-item" @onclick="CloseDrawer">
+                        <span class="d-icon">♨</span>
+                        <span>Smart Cafeteria & Token</span>
+                    </NavLink>
+                    <NavLink href="/grievance" class="drawer-nav-item" @onclick="CloseDrawer">
+                        <span class="d-icon">⚠</span>
+                        <span>Facility Grievance Desk</span>
+                    </NavLink>
+                    <NavLink href="/library" class="drawer-nav-item" @onclick="CloseDrawer">
+                        <span class="d-icon">📖</span>
+                        <span>Library OPAC Catalog</span>
+                    </NavLink>
+                </nav>
+
+                <div class="drawer-footer">
+                    <span>UniChrist Portal v1.0.0</span>
+                    <small>CHRIST (Deemed to be University)</small>
+                </div>
+            </div>
+        </aside>
+    }
+
+    <!-- Main Content Area -->
+    <main class="mobile-content-container">
+        @Body
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="mobile-bottom-nav">
+        <NavLink href="/" class="nav-tab" Match="NavLinkMatch.All">
+            <span class="nav-icon">☖</span>
+            <span class="nav-label">Hub</span>
+        </NavLink>
+        <NavLink href="/faculty" class="nav-tab">
+            <span class="nav-icon">⚲</span>
+            <span class="nav-label">Faculty</span>
+        </NavLink>
+        <NavLink href="/cafeteria" class="nav-tab">
+            <span class="nav-icon">♨</span>
+            <span class="nav-label">Dine</span>
+        </NavLink>
+        <NavLink href="/grievance" class="nav-tab">
+            <span class="nav-icon">⚠</span>
+            <span class="nav-label">Ticket</span>
+        </NavLink>
+        <NavLink href="/library" class="nav-tab">
+            <span class="nav-icon">📖</span>
+            <span class="nav-label">OPAC</span>
+        </NavLink>
+    </nav>
+</div>
+
+@code {
+    private bool isDrawerOpen = false;
+
+    private void ToggleDrawer() => isDrawerOpen = !isDrawerOpen;
+    private void CloseDrawer() => isDrawerOpen = false;
+}

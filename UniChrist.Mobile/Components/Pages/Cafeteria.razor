@@ -1,0 +1,106 @@
+@page "/cafeteria"
+@inject IAPIService Api
+
+<div class="page-container animate-fade-in">
+    <div class="page-header">
+        <h1 class="page-title">Smart Cafeteria</h1>
+        <p class="page-subtitle">Pre-order dining & live FIFO token management</p>
+    </div>
+
+    @if (lastOrder != null)
+    {
+        <div class="token-alert-card">
+            <div class="token-header">
+                <span>ORDER PLACED</span>
+                <span class="token-id">Token #@lastOrder.TokenNumber</span>
+            </div>
+            <p class="token-vendor">Pickup Counter: <strong>@lastOrder.VendorName</strong></p>
+            <p class="token-amount">Total: ₹@lastOrder.TotalAmount.ToString("F2")</p>
+            <button class="btn-secondary" @onclick="() => lastOrder = null">Dismiss Alert</button>
+        </div>
+    }
+
+    @if (isLoading)
+    {
+        <div class="loading-state">
+            <div class="spinner"></div>
+            <p>Loading cafeteria counters & menu...</p>
+        </div>
+    }
+    else if (!vendors.Any())
+    {
+        <div class="empty-state">
+            <p>No active cafeteria counters open at this hour.</p>
+        </div>
+    }
+    else
+    {
+        @foreach (var v in vendors)
+        {
+            <div class="vendor-section">
+                <div class="vendor-header">
+                    <div>
+                        <h2 class="vendor-name">@v.VendorName</h2>
+                        <span class="cuisine-tag">@v.CuisineType</span>
+                    </div>
+                    <span class="vendor-status">Open</span>
+                </div>
+
+                <div class="menu-grid">
+                    @foreach (var item in v.Items.Where(i => i.IsAvailable))
+                    {
+                        <div class="menu-item-card">
+                            <div class="item-info">
+                                <h3 class="item-name">@item.ItemName</h3>
+                                <span class="item-price">₹@item.Price.ToString("F2")</span>
+                                <span class="item-prep">⏱ @item.PreparationTimeMinutes mins</span>
+                            </div>
+                            <button class="btn-add-item" @onclick="() => QuickOrder(v.VendorId, item)">
+                                Order
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    private bool isLoading = true;
+    private List<CafeteriaVendorDto> vendors = new();
+    private OrderResponseDto? lastOrder;
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true;
+        try
+        {
+            vendors = await Api.GetCafeteriaMenuAsync();
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task QuickOrder(int vendorId, CafeteriaItemDto item)
+    {
+        var req = new OrderRequest
+        {
+            UserId = Api.CurrentUser?.UserId ?? 1, // Fallback to seeded demo user
+            VendorId = vendorId,
+            PaymentMode = "CAMPUS_DIGITAL_WALLET",
+            Items = new List<CreateOrderItemDto>
+            {
+                new CreateOrderItemDto { ItemId = item.ItemId, Quantity = 1 }
+            }
+        };
+
+        var response = await Api.PlaceCafeteriaOrderAsync(req);
+        if (response != null)
+        {
+            lastOrder = response;
+        }
+    }
+}
