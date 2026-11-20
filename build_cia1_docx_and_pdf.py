@@ -194,12 +194,12 @@ def build_cia1_documents():
     body.append(page_break())
 
     # =========================================================================
-    # SECTION 1: TEAM DETAILS & EVALUATION RUBRIC
+    # SECTION 1: TEAM PROFILE & PROJECT RESPONSIBILITIES
     # =========================================================================
     body.append(p("DBMS Project Specification & Design Report", bold=True, sz=32, align="center", before=20, after=10))
     body.append(p("CIA 1: Database Design (ERD, Normalization, Schema & Data Population)", sz=24, align="center", before=0, after=80))
 
-    body.append(p("Section 1: Team Details & Evaluation Rubrics", bold=True, sz=26, before=60, after=30))
+    body.append(p("Section 1: Project Team Profile & Role Allocations", bold=True, sz=26, before=60, after=30))
     body.append(p("Course: BCA381-4 — DBMS Project | Class: 4BCA-B | Project Guide: Dr Hemanth K S", bold=True, sz=22, before=0, after=30))
 
     team_headers = ["S.No", "Student Name", "Register Number", "Role in Project"]
@@ -209,16 +209,6 @@ def build_cia1_documents():
         ["3", "Aadiya Naresh", "2543163", "System analysis, ER modeling, sample data population & benchmark proofs"]
     ]
     body.append(table(team_headers, team_rows, [800, 2600, 2000, 4000], compact=True))
-
-    body.append(p("Component 2: Database Design Evaluation Rubric (10 Marks)", bold=True, sz=22, before=40, after=25))
-    rubric_headers = ["Evaluation Component", "Weightage", "Key Criteria Assessed"]
-    rubric_rows = [
-        ["Entity Relationship Diagram (ERD)", "2 Marks", "Entities, attributes, primary/foreign keys, relationships and cardinality"],
-        ["Database Normalization", "3 Marks", "UNF to BCNF with functional dependencies and anomaly prevention"],
-        ["Relational Database Schema", "2 Marks", "Tables, keys, appropriate data types, and integrity constraints"],
-        ["Database Creation and Data Population", "3 Marks", "SQL implementation, table creation, sample data population and execution output"]
-    ]
-    body.append(table(rubric_headers, rubric_rows, [3200, 1600, 4600], compact=True))
 
     # =========================================================================
     # SECTION 2: EXECUTIVE SUMMARY
@@ -236,7 +226,7 @@ def build_cia1_documents():
     # =========================================================================
     # SECTION 3: ENTITY RELATIONSHIP MODELING
     # =========================================================================
-    body.append(p("Section 3: Entity Relationship Diagram (ERD) — [2 Marks]", bold=True, sz=26, before=60, after=30))
+    body.append(p("Section 3: Entity Relationship Diagram & Architecture", bold=True, sz=26, before=60, after=30))
 
     body.append(p("3.1 Complete 12-Module Entity Identification Catalog", bold=True, sz=22, before=20, after=15))
     ent_headers = ["Mod #", "Campus Service", "Main Relational Tables", "Operational Scope"]
@@ -276,9 +266,9 @@ def build_cia1_documents():
     body.append(page_break())
 
     # =========================================================================
-    # SECTION 4: DATABASE NORMALIZATION (UNF TO BCNF) — [3 MARKS]
+    # SECTION 4: DATABASE NORMALIZATION (UNF TO BCNF)
     # =========================================================================
-    body.append(p("Section 4: Database Normalization (UNF to BCNF) — [3 Marks]", bold=True, sz=26, before=40, after=20))
+    body.append(p("Section 4: Database Normalization (UNF to BCNF)", bold=True, sz=26, before=40, after=20))
 
     body.append(p("4.1 Relational Anomalies Addressed", bold=True, sz=22, before=20, after=15))
     body.append(p_runs([("Insertion Anomaly: ", True, False, 22), ("Rooms, courses, and faculties can be added independently without requiring dummy assignments.", False, False, 22)], bullet=True, after=30))
@@ -348,10 +338,10 @@ def build_cia1_documents():
 sz="15.5"))
 
     # =========================================================================
-    # SECTION 5: RELATIONAL SCHEMA & DATA DICTIONARY — [2 MARKS]
+    # SECTION 5: RELATIONAL SCHEMA & DATA DICTIONARY
     # =========================================================================
     body.append(page_break())
-    body.append(p("Section 5: Relational Database Schema & Data Dictionary — [2 Marks]", bold=True, sz=26, before=40, after=20))
+    body.append(p("Section 5: Relational Database Schema & Data Dictionary", bold=True, sz=26, before=40, after=20))
     body.append(p(
         "Formal conversion rules were applied to translate the conceptual ERD into relational tables: "
         "Strong entities map directly to tables; subtype entities inherit primary keys (ON DELETE CASCADE); "
@@ -395,10 +385,10 @@ sz="15.5"))
     body.append(table(dd_headers, dd_rows, [1800, 1500, 2600, 3500], compact=True))
 
     # =========================================================================
-    # SECTION 6: DATABASE CREATION & DATA POPULATION — [3 MARKS]
+    # SECTION 6: DATABASE CREATION & DATA POPULATION
     # =========================================================================
     body.append(page_break())
-    body.append(p("Section 6: Database Creation & Data Population — [3 Marks]", bold=True, sz=26, before=40, after=20))
+    body.append(p("Section 6: Database Creation & Data Population", bold=True, sz=26, before=40, after=20))
     body.append(p(
         "All 34 tables were authored in ANSI SQL with complete integrity constraints in UniChrist_Database_Schema_and_Data.sql. "
         "The script was executed inside an ACID-compliant relational engine. Representative DDL, DML, and verified terminal execution logs are presented below:",

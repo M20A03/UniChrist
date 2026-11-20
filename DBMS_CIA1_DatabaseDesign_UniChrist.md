@@ -7,26 +7,21 @@
 
 ### Assignment Metadata & Team Details
 * **Course Code & Title:** BCA381-4 — Database Management Systems Project
-* **Assignment Title:** DBMS Project – CIA 1: Database Design (Component 2: 10 Marks)
+* **Assignment Title:** DBMS Project – CIA 1: Database Design
 * **Project Title:** **UniChrist: Integrated Campus Life & Location Services Portal**
 * **Project Guide:** **Dr Hemanth K S** (Associate Professor, Department of Computer Science)
 * **Due Date / Submission Date:** 20 November 2026
-* **Evaluation Weightage:** 10 Marks (ERD: 2M, Normalization: 3M, Relational Schema: 2M, Database Creation & Population: 3M)
 
 | S.No | Student Name | Register Number | Role in Project | Email ID |
-| :---: | :--- | :---: | :--- | :--- |
+| :---: | :--- | :--- | :--- | :--- |
 | **1** | **Mayank Raj Gupta** | **2543115** | **Team Lead**: Full database design, table schema, SQL scripts and backend logic | `mayank.raj@christuniversity.in` |
 | **2** | **Sonti Sri Lakshmi Aslesha** | **2543140** | **Schema Normalization**: 1NF to BCNF, constraints, views and queries | `aslesha.sonti@christuniversity.in` |
 | **3** | **Aadiya Naresh** | **2543163** | **System Analyst**: ER modeling, sample data population & benchmark proofs | `aadiya.naresh@christuniversity.in` |
 
 ---
 
-# Section 1: Team Details & Evaluation Rubrics
-* **Evaluation Component 1: Entity Relationship Diagram (ERD)** — 2 Marks (Entities, attributes, keys, relationships & cardinality)
-* **Evaluation Component 2: Database Normalization** — 3 Marks (UNF to BCNF with functional dependencies)
-* **Evaluation Component 3: Relational Database Schema** — 2 Marks (Tables, keys, data types and constraints)
-* **Evaluation Component 4: Database Creation and Data Population** — 3 Marks (SQL implementation and sample records)
-* **Total:** 10 Marks
+# Section 1: Project Team Profile & Role Allocations
+The project is executed collaboratively by Team 12 under the guidance of Dr Hemanth K S. Individual responsibilities encompass end-to-end database lifecycle modeling, formal functional dependency analysis, Boyce-Codd normal form decomposition, ANSI SQL script authoring, and ACID benchmark verification.
 
 ---
 
@@ -50,7 +45,7 @@ The schema incorporates all **12 operational campus modules** across **34 relati
 
 ---
 
-# Section 3: Entity Relationship Diagram (ERD) — [2 Marks]
+# Section 3: Entity Relationship Diagram & Architecture
 * **Entities:** 34 relational entities defined across the 12 modules.
 * **Attributes:** Formally classified into Key, Simple/Atomic, Composite, Multi-Valued, and Derived attributes.
 * **Cardinality & Participation:** 1:1, 1:N, M:N relationships with total participation on dependent child entities.
@@ -58,7 +53,7 @@ The schema incorporates all **12 operational campus modules** across **34 relati
 
 ---
 
-# Section 4: Database Normalization (UNF to BCNF) — [3 Marks]
+# Section 4: Database Normalization (UNF to BCNF)
 * **Relational Anomalies:** Detailed explanations for Insertion, Deletion, and Update anomalies.
 * **Functional Dependencies:** Catalog of 20 formal functional dependencies spanning all 12 modules.
 * **Normalization Demonstration:**
@@ -70,14 +65,14 @@ The schema incorporates all **12 operational campus modules** across **34 relati
 
 ---
 
-# Section 5: Relational Database Schema & Data Dictionary — [2 Marks]
+# Section 5: Relational Database Schema & Data Dictionary
 * **Mapping Rules:** Formal transformation from conceptual ERD to concrete relations.
 * **Data Dictionary:** Detailed specifications for all 34 tables (column names, data types, nullability, constraints, PK/FK relationships).
 * **Integrity Constraints:** Entity, referential (`CASCADE`, `RESTRICT`, `SET NULL`), domain `CHECK`, and unique constraints.
 
 ---
 
-# Section 6: Database Creation & Data Population — [3 Marks]
+# Section 6: Database Creation & Data Population
 * **SQL Implementation:** Complete SQL schema and sample data scripts in `UniChrist_Database_Schema_and_Data.sql`.
 * **Execution Proofs:** Live terminal outputs demonstrating table creation, constraints validation, foreign key cascades, and complex operational queries across the 12 modules.
 
