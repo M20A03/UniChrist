@@ -16,7 +16,7 @@
         <div class="header-actions">
             @if (Api.CurrentUser != null)
             {
-                <span class="user-badge" title="@Api.CurrentUser.Role">@Api.CurrentUser.FullName.Split(' ')[0]</span>
+                <span class="user-badge" title="@Api.CurrentUser.Role">@(Api.CurrentUser.FullName?.Split(' ')?.FirstOrDefault() ?? "User")</span>
             }
             else
             {

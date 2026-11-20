@@ -3,3 +3,7 @@ node_modules/
 .DS_Store
 *.log
 audio/foley/*.wav
+
+release_apk/
+output_apk/
+*.apk

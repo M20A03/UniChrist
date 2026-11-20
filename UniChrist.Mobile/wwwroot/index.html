@@ -10,15 +10,22 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
-    <div id="app">Loading UniChrist Portal...</div>
-
-    <div id="blazor-error-ui">
-        An unhandled error has occurred.
-        <a href="" class="reload">Reload</a>
-        <a class="dismiss">🗙</a>
+<body style="background-color: #080C14; color: #F0F4F8; margin: 0; padding: 0;">
+    <div id="app" style="background-color: #080C14; min-height: 100vh;">
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; font-family:sans-serif; color:#D4AF37;">
+            <div style="width:40px; height:40px; border:3px solid #1F2C4A; border-top:3px solid #D4AF37; border-radius:50%; animation:spin 1s linear infinite;"></div>
+            <p style="margin-top:16px; font-size:13px; font-weight:600; letter-spacing:2px; color:#94A3B8;">UNICHRIST PORTAL</p>
+        </div>
+        <style>
+            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        </style>
     </div>
 
-    <script src="_framework/blazor.webview.js" autostart="true"></script>
+    <div id="blazor-error-ui" style="display:none; position:fixed; bottom:0; left:0; right:0; background:#EF4444; color:#fff; padding:10px; z-index:9999;">
+        An unhandled error has occurred.
+        <a href="" style="color:#fff; font-weight:bold; margin-left:8px;">Reload</a>
+    </div>
+
+    <script src="_framework/blazor.webview.js"></script>
 </body>
 </html>

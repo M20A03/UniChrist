@@ -9,24 +9,17 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
-        builder
-            .UseMauiApp<App>()
-            .ConfigureFonts(fonts =>
-            {
-                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-            });
+        builder.UseMauiApp<App>();
 
         // Register MAUI Blazor WebView
         builder.Services.AddMauiBlazorWebView();
+        builder.Services.AddBlazorWebViewDeveloperTools();
 
 #if DEBUG
-        builder.Services.AddBlazorWebViewDeveloperTools();
         builder.Logging.AddDebug();
 #endif
 
         // Configure Production Deployed API Address
-        // Default URL targets the cloud-hosted UniChrist Web API.
         var apiBaseUrl = "https://unichrist-production.up.railway.app"; 
 
         builder.Services.AddHttpClient<IAPIService, APIService>(client =>
