@@ -1,0 +1,30 @@
+# Promptfoo Evaluation Configuration
+# LLM test suite for evaluating outputs against the 17 Anti-AI Prohibitions
+
+description: "UniChrist Anti-AI Quality Evaluation"
+
+prompts:
+  - "Generate an executive description of the UniChrist automated faculty timetable engine."
+
+providers:
+  - id: "echo"
+    config:
+      temperature: 0.1
+
+tests:
+  - description: "Must not contain forbidden ChatGPT buzzwords"
+    assert:
+      - type: not-icontains
+        value: "delve"
+      - type: not-icontains
+        value: "tapestry"
+      - type: not-icontains
+        value: "game-changer"
+      - type: not-icontains
+        value: "revolutionize"
+      - type: not-icontains
+        value: "in conclusion"
+  - description: "Must anchor claims to physical rooms or verified dates"
+    assert:
+      - type: contains-any
+        value: ["room_id", "period", "Faculty_Timetables", "BCNF"]

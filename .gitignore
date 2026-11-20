@@ -1,0 +1,5 @@
+node_modules/
+.promptfoo/
+.DS_Store
+*.log
+audio/foley/*.wav

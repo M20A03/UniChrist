@@ -1,0 +1,32 @@
+{
+  "name": "unichrist-ai-platform",
+  "version": "1.0.0",
+  "description": "UniChrist Autonomous Campus Operating System & AI Media Engine",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "promptfoo:eval": "promptfoo eval",
+    "foley:gen": "python3 generate_foley_sfx.py",
+    "erd:gen": "python3 generate_erd_4parts.py",
+    "report:build": "python3 build_cia1_docx_and_pdf.py"
+  },
+  "keywords": [
+    "ai-tools",
+    "mcp",
+    "promptfoo",
+    "playwright",
+    "motion",
+    "animejs"
+  ],
+  "author": "Mayank Raj Gupta (Team 12 / 14)",
+  "license": "MIT",
+  "dependencies": {
+    "animejs": "^3.2.2",
+    "lucide": "^0.475.0",
+    "motion": "^12.4.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.50.1",
+    "promptfoo": "^0.111.0"
+  }
+}
