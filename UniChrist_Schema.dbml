@@ -1,0 +1,289 @@
+// UniChrist: Relational Database Schema (DBML for dbdiagram.io)
+// Course: BCA381-4 (DBMS Project) | Class: 4BCA-B | Academic Year: 2025-2029
+// Team 12: Mayank Raj Gupta, Sonti Sri Lakshmi Aslesha, Aadiya Naresh
+// Project Guide: Dr Hemanth K S
+
+Table Roles {
+  role_id integer [pk, increment]
+  role_name varchar(50) [unique, not null]
+  role_description varchar(255)
+}
+
+Table Users {
+  user_id integer [pk, increment]
+  role_id integer [not null, ref: > Roles.role_id]
+  register_number varchar(50) [unique, not null]
+  full_name varchar(120) [not null]
+  email varchar(120) [unique, not null]
+  password_hash varchar(255) [not null]
+  is_active boolean [default: true]
+}
+
+Table Schools {
+  school_id integer [pk, increment]
+  school_name varchar(100) [unique, not null]
+  school_dean varchar(120) [not null]
+}
+
+Table Departments {
+  dept_id integer [pk, increment]
+  school_id integer [not null, ref: > Schools.school_id]
+  dept_name varchar(100) [unique, not null]
+  hod_name varchar(120) [not null]
+}
+
+Table Students {
+  student_id integer [pk, ref: - Users.user_id]
+  dept_id integer [not null, ref: > Departments.dept_id]
+  class_section varchar(20) [not null]
+  semester integer [not null]
+  batch_year integer [not null]
+}
+
+Table Faculties {
+  faculty_id integer [pk, ref: - Users.user_id]
+  dept_id integer [not null, ref: > Departments.dept_id]
+  designation varchar(80) [not null]
+  cabin_room_id integer [ref: > Campus_Rooms.room_id]
+  office_extension varchar(20)
+}
+
+Table Campus_Blocks {
+  block_id integer [pk, increment]
+  block_code varchar(20) [unique, not null]
+  block_name varchar(100) [not null]
+  total_floors integer [not null]
+  latitude numeric(10,8)
+  longitude numeric(11,8)
+}
+
+Table Campus_Rooms {
+  room_id integer [pk, increment]
+  block_id integer [not null, ref: > Campus_Blocks.block_id]
+  room_number varchar(30) [not null]
+  floor_number integer [not null]
+  room_type varchar(50) [not null]
+  seating_capacity integer [not null]
+}
+
+Table Faculty_Timetables {
+  schedule_id integer [pk, increment]
+  faculty_id integer [not null, ref: > Faculties.faculty_id]
+  day_of_week varchar(15) [not null]
+  period_number integer [not null]
+  start_time time [not null]
+  end_time time [not null]
+  room_id integer [not null, ref: > Campus_Rooms.room_id]
+  course_code varchar(30) [not null]
+}
+
+Table Faculty_Status_Overrides {
+  override_id integer [pk, increment]
+  faculty_id integer [not null, ref: > Faculties.faculty_id]
+  override_date date [not null]
+  status_type varchar(30) [not null]
+  assigned_room_id integer [ref: > Campus_Rooms.room_id]
+}
+
+Table Cafeteria_Vendors {
+  vendor_id integer [pk, increment]
+  vendor_name varchar(100) [not null]
+  block_id integer [not null, ref: > Campus_Blocks.block_id]
+  contact_phone varchar(20)
+  is_open boolean [default: true]
+}
+
+Table Cafeteria_Items {
+  item_id integer [pk, increment]
+  vendor_id integer [not null, ref: > Cafeteria_Vendors.vendor_id]
+  item_name varchar(100) [not null]
+  category varchar(50) [not null]
+  price numeric(8,2) [not null]
+  is_available boolean [default: true]
+  stock_quantity integer [not null]
+}
+
+Table Cafeteria_Orders {
+  order_id integer [pk, increment]
+  user_id integer [not null, ref: > Users.user_id]
+  vendor_id integer [not null, ref: > Cafeteria_Vendors.vendor_id]
+  order_timestamp timestamp [not null]
+  token_number integer [not null]
+  total_amount numeric(10,2) [not null]
+  order_status varchar(30) [not null]
+}
+
+Table Cafeteria_Order_Items {
+  order_item_id integer [pk, increment]
+  order_id integer [not null, ref: > Cafeteria_Orders.order_id]
+  item_id integer [not null, ref: > Cafeteria_Items.item_id]
+  quantity integer [not null]
+  unit_price numeric(8,2) [not null]
+  subtotal numeric(10,2) [not null]
+}
+
+Table Store_Categories {
+  category_id integer [pk, increment]
+  category_name varchar(80) [unique, not null]
+}
+
+Table Store_Inventory {
+  product_id integer [pk, increment]
+  category_id integer [not null, ref: > Store_Categories.category_id]
+  product_code varchar(50) [unique, not null]
+  product_name varchar(120) [not null]
+  unit_price numeric(10,2) [not null]
+  stock_quantity integer [not null]
+}
+
+Table Store_Orders {
+  store_order_id integer [pk, increment]
+  user_id integer [not null, ref: > Users.user_id]
+  order_date date [not null]
+  total_amount numeric(10,2) [not null]
+  order_status varchar(30) [not null]
+}
+
+Table Store_Order_Items {
+  store_order_item_id integer [pk, increment]
+  store_order_id integer [not null, ref: > Store_Orders.store_order_id]
+  product_id integer [not null, ref: > Store_Inventory.product_id]
+  quantity integer [not null]
+  unit_price numeric(10,2) [not null]
+  subtotal numeric(10,2) [not null]
+}
+
+Table Medical_Visits {
+  visit_id integer [pk, increment]
+  student_id integer [not null, ref: > Users.user_id]
+  attending_staff_id integer [not null, ref: > Users.user_id]
+  checkin_time timestamp [not null]
+  symptoms text [not null]
+  disposition varchar(50) [not null]
+}
+
+Table Medical_Prescriptions {
+  prescription_id integer [pk, increment]
+  visit_id integer [not null, ref: > Medical_Visits.visit_id]
+  medicine_name varchar(100) [not null]
+  dosage varchar(50) [not null]
+  quantity_dispensed integer [not null]
+}
+
+Table Lost_Found_Items {
+  item_id integer [pk, increment]
+  reported_by_user_id integer [not null, ref: > Users.user_id]
+  item_title varchar(120) [not null]
+  category varchar(50) [not null]
+  photo_url varchar(255)
+  found_at_room_id integer [ref: > Campus_Rooms.room_id]
+  status varchar(30) [not null]
+}
+
+Table Lost_Found_Claims {
+  claim_id integer [pk, increment]
+  item_id integer [not null, ref: > Lost_Found_Items.item_id]
+  claimed_by_user_id integer [not null, ref: > Users.user_id]
+  claim_description text [not null]
+  verification_status varchar(30) [not null]
+}
+
+Table Book_Categories {
+  category_id integer [pk, increment]
+  category_name varchar(80) [unique, not null]
+}
+
+Table Library_Books {
+  book_id integer [pk, increment]
+  isbn varchar(20) [unique, not null]
+  title varchar(200) [not null]
+  author varchar(120) [not null]
+  category_id integer [not null, ref: > Book_Categories.category_id]
+  total_copies integer [not null]
+  shelf_location varchar(50) [not null]
+}
+
+Table Library_Circulation {
+  issue_id integer [pk, increment]
+  book_id integer [not null, ref: > Library_Books.book_id]
+  user_id integer [not null, ref: > Users.user_id]
+  issued_date date [not null]
+  due_date date [not null]
+  fine_amount numeric(8,2) [default: 0]
+}
+
+Table Parking_Slots {
+  slot_id integer [pk, increment]
+  block_id integer [not null, ref: > Campus_Blocks.block_id]
+  slot_code varchar(20) [unique, not null]
+  vehicle_type varchar(30) [not null]
+  is_ev_charging boolean [default: false]
+  is_occupied boolean [default: false]
+}
+
+Table Parking_Logs {
+  log_id integer [pk, increment]
+  slot_id integer [not null, ref: > Parking_Slots.slot_id]
+  user_id integer [ref: > Users.user_id]
+  entry_time timestamp [not null]
+  exit_time timestamp
+}
+
+Table Student_Clubs {
+  club_id integer [pk, increment]
+  school_id integer [not null, ref: > Schools.school_id]
+  club_name varchar(120) [unique, not null]
+  founded_year integer [not null]
+}
+
+Table Club_Memberships {
+  membership_id integer [pk, increment]
+  club_id integer [not null, ref: > Student_Clubs.club_id]
+  student_id integer [not null, ref: > Students.student_id]
+  joined_date date [not null]
+  member_role varchar(40) [not null]
+}
+
+Table Campus_Events {
+  event_id integer [pk, increment]
+  club_id integer [not null, ref: > Student_Clubs.club_id]
+  event_title varchar(150) [not null]
+  venue_room_id integer [not null, ref: > Campus_Rooms.room_id]
+  max_registrations integer [not null]
+}
+
+Table Event_Registrations {
+  registration_id integer [pk, increment]
+  event_id integer [not null, ref: > Campus_Events.event_id]
+  user_id integer [not null, ref: > Users.user_id]
+  registered_time timestamp [not null]
+  qr_ticket_hash varchar(128) [unique, not null]
+}
+
+Table Grievances {
+  ticket_id integer [pk, increment]
+  student_id integer [not null, ref: > Users.user_id]
+  category varchar(50) [not null]
+  room_id integer [ref: > Campus_Rooms.room_id]
+  ticket_subject varchar(200) [not null]
+  priority varchar(20) [not null]
+  status varchar(30) [not null]
+}
+
+Table Grievance_Audit_Logs {
+  log_id integer [pk, increment]
+  ticket_id integer [not null, ref: > Grievances.ticket_id]
+  changed_by_user_id integer [not null, ref: > Users.user_id]
+  previous_status varchar(30) [not null]
+  new_status varchar(30) [not null]
+  action_timestamp timestamp [not null]
+}
+
+Table Academic_Resources {
+  resource_id integer [pk, increment]
+  dept_id integer [not null, ref: > Departments.dept_id]
+  uploaded_by_faculty_id integer [not null, ref: > Faculties.faculty_id]
+  document_title varchar(200) [not null]
+  course_code varchar(30) [not null]
+  file_url varchar(255) [not null]
+}

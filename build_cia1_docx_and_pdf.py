@@ -258,11 +258,12 @@ def build_cia1_documents():
     # Covers the whole page cleanly without dead blank space
     # =========================================================================
     body.append(page_break())
-    body.append(p("3.3 Comprehensive Entity-Relationship Diagram (Figma Architecture)", bold=True, sz=24, align="center", before=10, after=10))
-    body.append(p("Figure 1: Full-System Relational ER Diagram — 34 BCNF Entities Across 12 Functional Modules", italic=True, sz=18, align="center", before=0, after=15))
+    body.append(p("3.3 Comprehensive Entity-Relationship Diagram (FigJam / Figma Board)", bold=True, sz=24, align="center", before=10, after=5))
+    body.append(p("Figure 1: Full-System Relational ER Diagram — 34 BCNF Entities Across 12 Functional Modules", italic=True, sz=18, align="center", before=0, after=5))
+    body.append(p("Live Interactive FigJam Board: https://www.figma.com/board/13lZxvTOg5Z2wCOcCwvhm5", italic=False, sz=16, align="center", before=0, after=12))
     
-    # 5,950,000 EMUs width (6.5 in), 7,450,000 EMUs height (8.15 in) - FILLS ENTIRE PAGE WITHOUT SPILLOVER
-    body.append(image_drawing("rId13", 5950000, 7450000, ""))
+    # 5,950,000 EMUs width (6.5 in), 7,300,000 EMUs height (7.98 in) - FILLS ENTIRE PAGE WITHOUT SPILLOVER
+    body.append(image_drawing("rId13", 5950000, 7300000, ""))
     body.append(page_break())
 
     # =========================================================================
