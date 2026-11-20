@@ -333,6 +333,7 @@ def build_cia1_documents():
     ]
     body.append(table(fd_headers, fd_rows, [800, 2600, 4200, 1800], compact=True))
 
+    body.append(page_break())
     body.append(p("4.4 Final Normalized Relational Schema Specification", bold=True, sz=22, before=30, after=15))
     body.append(p("The 34 final BCNF relations are specified below (primary keys underlined; foreign keys marked with *):", sz=22, align="both", before=0, after=15))
     body.append(code_box(
@@ -463,6 +464,7 @@ CREATE TABLE Cafeteria_Orders (
     order_status VARCHAR(30) NOT NULL CHECK (order_status IN ('PLACED', 'PREPARING', 'READY_FOR_PICKUP', 'COLLECTED'))
 );""", sz="15"))
 
+    body.append(page_break())
     body.append(p("6.2 Verified Database Execution Output Proofs (Live Terminal Logs)", bold=True, sz=22, before=20, after=10))
     body.append(code_box(
 """sqlite> SELECT f.faculty_id, u.full_name AS faculty_name, f.designation,
