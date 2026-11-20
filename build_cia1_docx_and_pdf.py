@@ -1,68 +1,81 @@
 #!/usr/bin/env python3
 """
-Official Builder for DBMS Project CIA-1 Submission:
-'DBMS Project – CIA 1: Database Design (ERD, Normalization, Schema & Data Population)'
-Department of Computer Science, CHRIST (Deemed to be University), Bangalore Yeshwanthpur
-Course: BCA381-4 | Class: 4BCA-B | Sem IV (2025–2029) | Guide: Dr Hemanth K S
-Generates ONLY ONE PDF: DBMS_CIA1_DatabaseDesign_Team12_UniChrist.pdf
+Complete, single-script pipeline to generate the official DBMS CIA 1 Database Design
+submission matching the exact visual formatting of Assessment-1_Synopsis_SRS_UniChrist.docx.
+
+Outputs STRICTLY ONE PDF:
+  DBMS_CIA1_DatabaseDesign_Team12_UniChrist.pdf
+and its source DOCX:
+  DBMS_CIA1_DatabaseDesign_Team12_UniChrist.docx
 """
 
 import os
 import shutil
 import zipfile
 import subprocess
-import xml.sax.saxutils as saxutils
 
 def escape_xml(s):
-    return saxutils.escape(str(s))
+    return (s.replace("&", "&amp;")
+             .replace("<", "&lt;")
+             .replace(">", "&gt;")
+             .replace('"', "&quot;")
+             .replace("'", "&apos;"))
 
-def build_cia1_submission():
-    print("=== Step 1: Ensure Figma ER Diagram Image is Generated ===")
-    if not os.path.exists("images/erd_diagram.png"):
-        subprocess.run(["python3", "generate_erd_image.py"], check=True)
-    print("images/erd_diagram.png verified.")
+def build_cia1_documents():
+    workspace_dir = "/home/mayankraj/Documents/Course Projects/DBMS project"
+    synopsis_docx = os.path.join(workspace_dir, "Assessment-1_Synopsis_SRS_UniChrist.docx")
+    out_docx = os.path.join(workspace_dir, "DBMS_CIA1_DatabaseDesign_Team12_UniChrist.docx")
+    out_pdf = os.path.join(workspace_dir, "DBMS_CIA1_DatabaseDesign_Team12_UniChrist.pdf")
+    temp_dir = os.path.join(workspace_dir, ".temp_cia1_build")
 
-    print("=== Step 2: Unpack Base Template from Synopsis DOCX ===")
-    temp_dir = "/tmp/cia1_docx_build"
     if os.path.exists(temp_dir):
         shutil.rmtree(temp_dir)
-    os.makedirs(temp_dir, exist_ok=True)
 
-    with zipfile.ZipFile("Assessment-1_Synopsis_SRS_UniChrist.docx", "r") as z:
-        z.extractall(temp_dir)
+    # Step 1: Ensure ER diagram image is up-to-date
+    print("=== Step 1: Ensure Figma ER Diagram Image is Generated ===")
+    erd_script = os.path.join(workspace_dir, "generate_erd_image.py")
+    if os.path.exists(erd_script):
+        subprocess.run(["python3", erd_script], check=True)
+    erd_img_path = os.path.join(workspace_dir, "images", "erd_diagram.png")
+    if not os.path.exists(erd_img_path):
+        raise FileNotFoundError(f"Missing {erd_img_path}")
+    print(f"images/erd_diagram.png verified ({os.path.getsize(erd_img_path)} bytes).")
 
-    print("=== Step 3: Configure Relationships & Assets ===")
+    # Step 2: Unpack base template from synopsis docx
+    print("=== Step 2: Unpack Base Template from Synopsis DOCX ===")
+    with zipfile.ZipFile(synopsis_docx, 'r') as zip_ref:
+        zip_ref.extractall(temp_dir)
+
+    # Step 3: Configure Relationships & Assets & Headers
+    print("=== Step 3: Configure Relationships, Headers & Assets ===")
     media_dir = os.path.join(temp_dir, "word", "media")
     os.makedirs(media_dir, exist_ok=True)
-    shutil.copy("images/erd_diagram.png", os.path.join(media_dir, "image2.png"))
+    shutil.copy2(erd_img_path, os.path.join(media_dir, "erd_diagram.png"))
 
-    rels_path = os.path.join(temp_dir, "word", "_rels", "document.xml.rels")
-    with open(rels_path, "r", encoding="utf-8") as f:
+    rels_file = os.path.join(temp_dir, "word", "_rels", "document.xml.rels")
+    with open(rels_file, "r", encoding="utf-8") as f:
         rels_xml = f.read()
 
-    if 'Target="media/image2.png"' not in rels_xml:
-        rels_xml = rels_xml.replace(
-            '</Relationships>',
-            '<Relationship Id="rId13" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image2.png"/></Relationships>'
-        )
-        with open(rels_path, "w", encoding="utf-8") as f:
+    erd_rel_tag = '<Relationship Id="rId13" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/erd_diagram.png"/>'
+    if 'Target="media/erd_diagram.png"' not in rels_xml:
+        rels_xml = rels_xml.replace('</Relationships>', f'  {erd_rel_tag}\n</Relationships>')
+        with open(rels_file, "w", encoding="utf-8") as f:
             f.write(rels_xml)
 
+    # Update header2.xml to say "Database Design Report (ERD, Normalization, Schema & Data Population)"
     hdr2_path = os.path.join(temp_dir, "word", "header2.xml")
-    with open(hdr2_path, "r", encoding="utf-8") as f:
-        hdr2_xml = f.read()
-    hdr2_xml = hdr2_xml.replace(
-        "System Requirements Specification (SRS)",
-        "Database Design Report (ERD, Normalization, Schema &amp; Data Population)"
-    )
-    with open(hdr2_path, "w", encoding="utf-8") as f:
-        f.write(hdr2_xml)
+    if os.path.exists(hdr2_path):
+        with open(hdr2_path, "r", encoding="utf-8") as f:
+            hdr2_xml = f.read()
+        hdr2_xml = hdr2_xml.replace("System Requirements Specification (SRS)", "Database Design Report (ERD, Normalization, Schema &amp; Data Population)")
+        with open(hdr2_path, "w", encoding="utf-8") as f:
+            f.write(hdr2_xml)
 
+    # Step 4: Build WordprocessingML content
     print("=== Step 4: Construct WordprocessingML Document Content ===")
-    def p(text="", bold=False, italic=False, sz=24, align="left", before=0, after=80, bullet=False):
+
+    def p(text="", bold=False, italic=False, sz=24, align="left", before=0, after=60):
         xml = ['<w:p><w:pPr><w:pStyle w:val="Normal"/><w:bidi w:val="0"/>']
-        if bullet:
-            xml.append('<w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr>')
         xml.append(f'<w:spacing w:before="{before}" w:after="{after}"/>')
         if align != "left":
             xml.append(f'<w:jc w:val="{align}"/>')
@@ -78,7 +91,7 @@ def build_cia1_submission():
         xml.append('</w:p>')
         return ''.join(xml)
 
-    def p_runs(runs, align="left", before=0, after=80, bullet=False):
+    def p_runs(runs, align="left", before=0, after=50, bullet=False):
         xml = ['<w:p><w:pPr><w:pStyle w:val="Normal"/><w:bidi w:val="0"/>']
         if bullet:
             xml.append('<w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr>')
@@ -100,9 +113,12 @@ def build_cia1_submission():
     def page_break():
         return '<w:p><w:r><w:br w:type="page"/></w:r></w:p>'
 
-    def table(headers, rows, widths):
+    def table(headers, rows, widths, compact=False):
         total_w = sum(widths)
-        xml = [f'<w:tbl><w:tblPr><w:tblW w:w="{total_w}" w:type="dxa"/><w:jc w:val="left"/><w:tblInd w:w="113" w:type="dxa"/><w:tblLayout w:type="fixed"/><w:tblCellMar><w:top w:w="80" w:type="dxa"/><w:left w:w="110" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="110" w:type="dxa"/></w:tblCellMar></w:tblPr>']
+        top_bot = "30" if compact else "50"
+        font_sz = "18.5" if compact else "20"
+        hdr_sz = "20" if compact else "21"
+        xml = [f'<w:tbl><w:tblPr><w:tblW w:w="{total_w}" w:type="dxa"/><w:jc w:val="left"/><w:tblInd w:w="113" w:type="dxa"/><w:tblLayout w:type="fixed"/><w:tblCellMar><w:top w:w="{top_bot}" w:type="dxa"/><w:left w:w="90" w:type="dxa"/><w:bottom w:w="{top_bot}" w:type="dxa"/><w:right w:w="90" w:type="dxa"/></w:tblCellMar></w:tblPr>']
         xml.append('<w:tblGrid>')
         for w in widths:
             xml.append(f'<w:gridCol w:w="{w}"/>')
@@ -113,7 +129,7 @@ def build_cia1_submission():
             for i, h_text in enumerate(headers):
                 w = widths[i]
                 xml.append(f'<w:tc><w:tcPr><w:tcW w:w="{w}" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="6" w:space="0" w:color="000000"/><w:left w:val="single" w:sz="6" w:space="0" w:color="000000"/><w:bottom w:val="single" w:sz="6" w:space="0" w:color="000000"/><w:right w:val="single" w:sz="6" w:space="0" w:color="000000"/></w:tcBorders><w:shd w:fill="F2F2F2" w:val="clear"/></w:tcPr>')
-                xml.append(f'<w:p><w:pPr><w:pStyle w:val="Normal"/><w:spacing w:before="50" w:after="50"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:b/><w:color w:val="000000"/><w:sz w:val="21"/></w:rPr><w:t>{escape_xml(h_text)}</w:t></w:r></w:p></w:tc>')
+                xml.append(f'<w:p><w:pPr><w:pStyle w:val="Normal"/><w:spacing w:before="35" w:after="35"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:b/><w:color w:val="000000"/><w:sz w:val="{hdr_sz}"/></w:rPr><w:t>{escape_xml(h_text)}</w:t></w:r></w:p></w:tc>')
             xml.append('</w:tr>')
 
         for r_idx, r in enumerate(rows):
@@ -122,68 +138,69 @@ def build_cia1_submission():
             for c_idx, cell_text in enumerate(r):
                 w = widths[c_idx]
                 xml.append(f'<w:tc><w:tcPr><w:tcW w:w="{w}" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="4" w:space="0" w:color="CCCCCC"/><w:left w:val="single" w:sz="4" w:space="0" w:color="CCCCCC"/><w:bottom w:val="single" w:sz="4" w:space="0" w:color="CCCCCC"/><w:right w:val="single" w:sz="4" w:space="0" w:color="CCCCCC"/></w:tcBorders><w:shd w:fill="{shd}" w:val="clear"/></w:tcPr>')
-                xml.append(f'<w:p><w:pPr><w:pStyle w:val="Normal"/><w:spacing w:before="35" w:after="35"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="000000"/><w:sz w:val="20"/></w:rPr><w:t>{escape_xml(cell_text)}</w:t></w:r></w:p></w:tc>')
+                xml.append(f'<w:p><w:pPr><w:pStyle w:val="Normal"/><w:spacing w:before="20" w:after="20"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman"/><w:color w:val="000000"/><w:sz w:val="{font_sz}"/></w:rPr><w:t>{escape_xml(cell_text)}</w:t></w:r></w:p></w:tc>')
             xml.append('</w:tr>')
         xml.append('</w:tbl>')
-        xml.append(p("", before=0, after=60))
+        xml.append(p("", before=0, after=30))
         return ''.join(xml)
 
     def image_drawing(rId, cx, cy, caption=""):
-        xml = [f'<w:p><w:pPr><w:pStyle w:val="Normal"/><w:spacing w:before="80" w:after="60"/><w:jc w:val="center"/></w:pPr><w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="{cx}" cy="{cy}"/><wp:effectExtent l="0" t="0" r="0" b="0"/><wp:docPr id="2" name="ER Diagram"/><wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/></wp:cNvGraphicFramePr><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="2" name="ER Diagram"/><pic:cNvPicPr><a:picLocks noChangeAspect="1" noChangeArrowheads="1"/></pic:cNvPicPr></pic:nvPicPr><pic:blipFill><a:blip r:embed="{rId}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr bwMode="auto"><a:xfrm><a:off x="0" y="0"/><a:ext cx="{cx}" cy="{cy}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>']
+        xml = [f'<w:p><w:pPr><w:pStyle w:val="Normal"/><w:spacing w:before="0" w:after="0"/><w:jc w:val="center"/></w:pPr><w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="{cx}" cy="{cy}"/><wp:effectExtent l="0" t="0" r="0" b="0"/><wp:docPr id="2" name="ER Diagram"/><wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/></wp:cNvGraphicFramePr><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="2" name="ER Diagram"/><pic:cNvPicPr><a:picLocks noChangeAspect="1" noChangeArrowheads="1"/></pic:cNvPicPr></pic:nvPicPr><pic:blipFill><a:blip r:embed="{rId}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr bwMode="auto"><a:xfrm><a:off x="0" y="0"/><a:ext cx="{cx}" cy="{cy}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>']
         if caption:
-            xml.append(p(caption, italic=True, sz=20, align="center", before=0, after=80))
+            xml.append(p(caption, italic=True, sz=18, align="center", before=0, after=20))
         return ''.join(xml)
 
-    def code_box(code_text):
+    def code_box(code_text, sz="16"):
         lines = code_text.strip().split('\n')
-        xml = ['<w:tbl><w:tblPr><w:tblW w:w="9400" w:type="dxa"/><w:jc w:val="left"/><w:tblInd w:w="113" w:type="dxa"/><w:tblLayout w:type="fixed"/><w:tblCellMar><w:top w:w="90" w:type="dxa"/><w:left w:w="130" w:type="dxa"/><w:bottom w:w="90" w:type="dxa"/><w:right w:w="130" w:type="dxa"/></w:tblCellMar></w:tblPr>']
+        xml = ['<w:tbl><w:tblPr><w:tblW w:w="9400" w:type="dxa"/><w:jc w:val="left"/><w:tblInd w:w="113" w:type="dxa"/><w:tblLayout w:type="fixed"/><w:tblCellMar><w:top w:w="50" w:type="dxa"/><w:left w:w="100" w:type="dxa"/><w:bottom w:w="50" w:type="dxa"/><w:right w:w="100" w:type="dxa"/></w:tblCellMar></w:tblPr>']
         xml.append('<w:tblGrid><w:gridCol w:w="9400"/></w:tblGrid>')
         xml.append('<w:tr><w:trPr><w:cantSplit/></w:trPr>')
         xml.append('<w:tc><w:tcPr><w:tcW w:w="9400" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="6" w:space="0" w:color="B0B0B0"/><w:left w:val="single" w:sz="18" w:space="0" w:color="1F497D"/><w:bottom w:val="single" w:sz="6" w:space="0" w:color="B0B0B0"/><w:right w:val="single" w:sz="6" w:space="0" w:color="B0B0B0"/></w:tcBorders><w:shd w:fill="F4F6F9" w:val="clear"/></w:tcPr>')
         for line in lines:
-            xml.append(f'<w:p><w:pPr><w:pStyle w:val="Normal"/><w:spacing w:before="12" w:after="12"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Consolas" w:hAnsi="Consolas"/><w:color w:val="1E293B"/><w:sz w:val="18"/></w:rPr><w:t xml:space="preserve">{escape_xml(line)}</w:t></w:r></w:p>')
+            xml.append(f'<w:p><w:pPr><w:pStyle w:val="Normal"/><w:spacing w:before="6" w:after="6"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Consolas" w:hAnsi="Consolas"/><w:color w:val="1E293B"/><w:sz w:val="{sz}"/></w:rPr><w:t xml:space="preserve">{escape_xml(line)}</w:t></w:r></w:p>')
         xml.append('</w:tc></w:tr></w:tbl>')
-        xml.append(p("", before=0, after=50))
+        xml.append(p("", before=0, after=30))
         return ''.join(xml)
 
     body = []
 
     # =========================================================================
-    # COVER PAGE
+    # COVER PAGE — PROPORTIONATELY SPACED TO COVER THE ENTIRE PAGE VERTICALLY
     # =========================================================================
-    body.append('<w:p><w:pPr><w:pStyle w:val="Normal"/><w:spacing w:before="140" w:after="180"/><w:jc w:val="center"/></w:pPr><w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="3505200" cy="1075055"/><wp:effectExtent l="0" t="0" r="0" b="0"/><wp:docPr id="1" name="CHRIST University Logo"/><wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/></wp:cNvGraphicFramePr><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="1" name="CHRIST University Logo"/><pic:cNvPicPr><a:picLocks noChangeAspect="1" noChangeArrowheads="1"/></pic:cNvPicPr></pic:nvPicPr><pic:blipFill><a:blip r:embed="rId2"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr bwMode="auto"><a:xfrm><a:off x="0" y="0"/><a:ext cx="3505200" cy="1075055"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>')
+    body.append('<w:p><w:pPr><w:pStyle w:val="Normal"/><w:spacing w:before="450" w:after="450"/><w:jc w:val="center"/></w:pPr><w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="3505200" cy="1075055"/><wp:effectExtent l="0" t="0" r="0" b="0"/><wp:docPr id="1" name="CHRIST University Logo"/><wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/></wp:cNvGraphicFramePr><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="1" name="CHRIST University Logo"/><pic:cNvPicPr><a:picLocks noChangeAspect="1" noChangeArrowheads="1"/></pic:cNvPicPr></pic:nvPicPr><pic:blipFill><a:blip r:embed="rId2"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr bwMode="auto"><a:xfrm><a:off x="0" y="0"/><a:ext cx="3505200" cy="1075055"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>')
 
-    body.append(p("DBMS PROJECT REPORT", bold=True, sz=36, align="center", before=50, after=30))
-    body.append(p("UniChrist: Integrated Campus Life & Location Services Portal", bold=True, sz=28, align="center", before=0, after=160))
+    body.append(p("DBMS PROJECT REPORT", bold=True, sz=36, align="center", before=100, after=50))
+    body.append(p("UniChrist: Integrated Campus Life & Location Services Portal", bold=True, sz=28, align="center", before=0, after=650))
 
-    body.append(p("Submitted By", sz=26, align="center", before=0, after=30))
-    body.append(p("Mayank Raj Gupta (2543115)", bold=True, sz=26, align="center", before=0, after=18))
-    body.append(p("Sonti Sri Lakshmi Aslesha (2543140)", bold=True, sz=26, align="center", before=0, after=18))
-    body.append(p("Aadiya Naresh (2543163)", bold=True, sz=26, align="center", before=0, after=160))
+    body.append(p("Submitted By", sz=26, align="center", before=0, after=60))
+    body.append(p("Mayank Raj Gupta (2543115)", bold=True, sz=26, align="center", before=0, after=40))
+    body.append(p("Sonti Sri Lakshmi Aslesha (2543140)", bold=True, sz=26, align="center", before=0, after=40))
+    body.append(p("Aadiya Naresh (2543163)", bold=True, sz=26, align="center", before=0, after=650))
 
-    body.append(p("Project Guide", sz=26, align="center", before=0, after=30))
-    body.append(p("Dr Hemanth K S", bold=True, sz=26, align="center", before=0, after=18))
-    body.append(p("Associate Professor, Department of Computer Science", sz=24, align="center", before=0, after=160))
+    body.append(p("Project Guide", sz=26, align="center", before=0, after=60))
+    body.append(p("Dr Hemanth K S", bold=True, sz=26, align="center", before=0, after=40))
+    body.append(p("Associate Professor, Department of Computer Science", sz=24, align="center", before=0, after=650))
 
-    body.append(p("CHRIST (Deemed to be UNIVERSITY)", bold=True, sz=30, align="center", before=0, after=25))
-    body.append(p("Department of Computer Science", sz=26, align="center", before=0, after=18))
-    body.append(p("Bangalore Yeshwanthpur Campus", sz=24, align="center", before=0, after=160))
+    body.append(p("CHRIST (Deemed to be UNIVERSITY)", bold=True, sz=30, align="center", before=0, after=60))
+    body.append(p("Department of Computer Science", sz=26, align="center", before=0, after=40))
+    body.append(p("Bangalore Yeshwanthpur Campus", sz=24, align="center", before=0, after=650))
 
-    body.append(p("A project report submitted in partial fulfillment of the requirements for the course BCA381-4 – DBMS Project of the degree of Bachelor of Computer Applications (BCA) of CHRIST (Deemed to be University).", sz=24, align="both", before=0, after=160))
+    body.append(p("A project report submitted in partial fulfillment of the requirements for the course BCA381-4 – DBMS Project of the degree of Bachelor of Computer Applications (BCA) of CHRIST (Deemed to be University).", sz=24, align="both", before=0, after=650))
 
-    body.append(p("Course: BCA381-4 — DBMS Project | Class: 4BCA-B", bold=True, sz=26, align="center", before=0, after=18))
-    body.append(p("Academic Year: 2025 – 2029", bold=True, sz=26, align="center", before=0, after=160))
+    body.append(p("Course: BCA381-4 — DBMS Project | Class: 4BCA-B", bold=True, sz=26, align="center", before=0, after=40))
+    body.append(p("Academic Year: 2025 – 2029", bold=True, sz=26, align="center", before=0, after=360))
 
+    # Page Break after Cover Page
     body.append(page_break())
 
     # =========================================================================
-    # INTERIOR PAGE HEADER & SECTION 1
+    # SECTION 1: TEAM DETAILS & EVALUATION RUBRIC
     # =========================================================================
-    body.append(p("DBMS Project Specification & Design Report", bold=True, sz=32, align="center", before=30, after=20))
-    body.append(p("CIA 1: Database Design (ERD, Normalization, Schema & Data Population)", sz=26, align="center", before=0, after=120))
+    body.append(p("DBMS Project Specification & Design Report", bold=True, sz=32, align="center", before=20, after=10))
+    body.append(p("CIA 1: Database Design (ERD, Normalization, Schema & Data Population)", sz=24, align="center", before=0, after=80))
 
-    body.append(p("Section 1: Team Details & Evaluation Rubrics", bold=True, sz=28, before=100, after=50))
-    body.append(p("Course: BCA381-4 — DBMS Project | Class: 4BCA-B | Project Guide: Dr Hemanth K S", bold=True, sz=24, before=0, after=50))
+    body.append(p("Section 1: Team Details & Evaluation Rubrics", bold=True, sz=26, before=60, after=30))
+    body.append(p("Course: BCA381-4 — DBMS Project | Class: 4BCA-B | Project Guide: Dr Hemanth K S", bold=True, sz=22, before=0, after=30))
 
     team_headers = ["S.No", "Student Name", "Register Number", "Role in Project"]
     team_rows = [
@@ -191,9 +208,9 @@ def build_cia1_submission():
         ["2", "Sonti Sri Lakshmi Aslesha", "2543140", "Schema Normalization (1NF to BCNF), constraints, views and queries"],
         ["3", "Aadiya Naresh", "2543163", "System analysis, ER modeling, sample data population & benchmark proofs"]
     ]
-    body.append(table(team_headers, team_rows, [800, 2600, 2000, 4000]))
+    body.append(table(team_headers, team_rows, [800, 2600, 2000, 4000], compact=True))
 
-    body.append(p("Component 2: Database Design Evaluation Rubric (10 Marks)", bold=True, sz=24, before=60, after=40))
+    body.append(p("Component 2: Database Design Evaluation Rubric (10 Marks)", bold=True, sz=22, before=40, after=25))
     rubric_headers = ["Evaluation Component", "Weightage", "Key Criteria Assessed"]
     rubric_rows = [
         ["Entity Relationship Diagram (ERD)", "2 Marks", "Entities, attributes, primary/foreign keys, relationships and cardinality"],
@@ -201,27 +218,27 @@ def build_cia1_submission():
         ["Relational Database Schema", "2 Marks", "Tables, keys, appropriate data types, and integrity constraints"],
         ["Database Creation and Data Population", "3 Marks", "SQL implementation, table creation, sample data population and execution output"]
     ]
-    body.append(table(rubric_headers, rubric_rows, [3200, 1600, 4600]))
+    body.append(table(rubric_headers, rubric_rows, [3200, 1600, 4600], compact=True))
 
     # =========================================================================
     # SECTION 2: EXECUTIVE SUMMARY
     # =========================================================================
-    body.append(p("Section 2: Executive Summary & System Overview", bold=True, sz=28, before=120, after=50))
+    body.append(p("Section 2: Executive Summary & System Overview", bold=True, sz=26, before=60, after=30))
     body.append(p(
         "In strict consistency with the Project Synopsis and SRS approved by project guide Dr Hemanth K S, "
         "the UniChrist database models an integrated academic and facilities management platform. Instead of costly physical hardware beacons, "
         "the architecture implements an intelligent Automated Faculty Schedule & Location Engine. By querying faculty weekly timetables against "
         "real-time clock periods, the system dynamically resolves active lecture rooms (e.g. DBMS Lab 201) or designated staff cabins (e.g. Staff Room 101). "
         "The schema unifies all 12 campus modules across 34 relational tables normalized strictly up to Boyce-Codd Normal Form (BCNF).",
-        sz=24, align="both", before=0, after=80
+        sz=22, align="both", before=0, after=50
     ))
 
     # =========================================================================
-    # SECTION 3: ENTITY RELATIONSHIP DIAGRAM (ERD) — [2 MARKS]
+    # SECTION 3: ENTITY RELATIONSHIP MODELING
     # =========================================================================
-    body.append(p("Section 3: Entity Relationship Diagram (ERD) — [2 Marks]", bold=True, sz=28, before=120, after=50))
+    body.append(p("Section 3: Entity Relationship Diagram (ERD) — [2 Marks]", bold=True, sz=26, before=60, after=30))
 
-    body.append(p("3.1 Complete 12-Module Entity Identification Catalog", bold=True, sz=24, before=50, after=30))
+    body.append(p("3.1 Complete 12-Module Entity Identification Catalog", bold=True, sz=22, before=20, after=15))
     ent_headers = ["Mod #", "Campus Service", "Main Relational Tables", "Operational Scope"]
     ent_rows = [
         ["0", "Core Demographics", "Roles, Users, Schools, Departments, Students, Faculties", "Multi-role RBAC, academic hierarchy, student & faculty subtypes."],
@@ -238,47 +255,43 @@ def build_cia1_submission():
         ["11", "Study Resources", "Academic_Resources", "Syllabus copies, past exam question papers (PYQs), lab manuals with downloads."],
         ["12", "Campus Directory", "Campus_Blocks, Campus_Rooms", "Interactive directory: blocks, floors, classrooms, labs and seminar halls."]
     ]
-    body.append(table(ent_headers, ent_rows, [800, 2200, 3400, 3000]))
+    body.append(table(ent_headers, ent_rows, [800, 2200, 3400, 3000], compact=True))
 
-    body.append(p("3.2 Attribute Classification & Cardinality Constraints", bold=True, sz=24, before=60, after=30))
-    body.append(p_runs([("Key Attributes: ", True, False, 24), ("user_id, register_number, isbn, slot_code, and ticket_id uniquely identify entity instances.", False, False, 24)], bullet=True))
-    body.append(p_runs([("Simple & Composite Attributes: ", True, False, 24), ("Scalar properties like unit_price and floor_number; composite room locations decomposed into block_id and room_number.", False, False, 24)], bullet=True))
-    body.append(p_runs([("Multi-Valued & Derived: ", True, False, 24), ("Decomposed into associative relations (Order_Items, Club_Memberships); derived fields (fine_amount, available_slots) computed dynamically.", False, False, 24)], bullet=True))
-    body.append(p_runs([("Cardinality & Participation: ", True, False, 24), ("1:1, 1:N, and M:N relationships; total participation enforced on child entities (Rooms in Blocks, Order Items in Orders).", False, False, 24)], bullet=True))
+    body.append(p("3.2 Attribute Classification & Cardinality Constraints", bold=True, sz=22, before=30, after=15))
+    body.append(p_runs([("Key Attributes: ", True, False, 22), ("user_id, register_number, isbn, slot_code, and ticket_id uniquely identify entity instances.", False, False, 22)], bullet=True))
+    body.append(p_runs([("Simple & Composite Attributes: ", True, False, 22), ("Scalar properties like unit_price and floor_number; composite room locations decomposed into block_id and room_number.", False, False, 22)], bullet=True))
+    body.append(p_runs([("Multi-Valued & Derived: ", True, False, 22), ("Decomposed into associative relations (Order_Items, Club_Memberships); derived fields (fine_amount, available_slots) computed dynamically.", False, False, 22)], bullet=True))
+    body.append(p_runs([("Cardinality & Participation: ", True, False, 22), ("1:1, 1:N, and M:N relationships; total participation enforced on child entities (Rooms in Blocks, Order Items in Orders).", False, False, 22)], bullet=True))
 
     # =========================================================================
-    # DEDICATED FULL-PAGE ER DIAGRAM (FIGMA SHAPE STYLING ON EXACTLY ONE PAGE)
+    # DEDICATED FULL-PAGE FIGMA ER DIAGRAM (EXACTLY ONE DEDICATED FULL PAGE)
+    # Covers the whole page cleanly without dead blank space
     # =========================================================================
     body.append(page_break())
-    body.append(p("3.3 Comprehensive Entity-Relationship Diagram (Figma-Engineered Architecture)", bold=True, sz=26, align="center", before=40, after=30))
-    body.append(p("Figure 1: Full-System Relational ER Diagram &mdash; 34 BCNF Entities Across 12 Modules (Figma Shape Layout)", italic=True, sz=20, align="center", before=0, after=50))
+    body.append(p("3.3 Comprehensive Entity-Relationship Diagram (Figma Architecture)", bold=True, sz=24, align="center", before=10, after=10))
+    body.append(p("Figure 1: Full-System Relational ER Diagram — 34 BCNF Entities Across 12 Functional Modules", italic=True, sz=18, align="center", before=0, after=15))
     
-    # 5,760,000 EMUs width (6.3 in), 4,011,428 EMUs height (4.38 in)
-    body.append(image_drawing("rId13", 5760000, 4011428, ""))
-    body.append(p(
-        "Note: Designed using Figma design system principles with rounded entity cards, color-coded module frames, "
-        "explicit primary/foreign key pill badges, and diamond relationship connectors. Satisfies Boyce-Codd Normal Form across all tables.",
-        italic=True, sz=18, align="center", before=20, after=40
-    ))
+    # 5,950,000 EMUs width (6.5 in), 7,450,000 EMUs height (8.15 in) - FILLS ENTIRE PAGE WITHOUT SPILLOVER
+    body.append(image_drawing("rId13", 5950000, 7450000, ""))
     body.append(page_break())
 
     # =========================================================================
     # SECTION 4: DATABASE NORMALIZATION (UNF TO BCNF) — [3 MARKS]
     # =========================================================================
-    body.append(p("Section 4: Database Normalization (UNF to BCNF) — [3 Marks]", bold=True, sz=28, before=100, after=50))
+    body.append(p("Section 4: Database Normalization (UNF to BCNF) — [3 Marks]", bold=True, sz=26, before=40, after=20))
 
-    body.append(p("4.1 Relational Anomalies Addressed", bold=True, sz=24, before=40, after=30))
-    body.append(p_runs([("Insertion Anomaly: ", True, False, 24), ("Rooms, courses, and faculties can be added independently without requiring dummy assignments.", False, False, 24)], bullet=True))
-    body.append(p_runs([("Deletion Anomaly: ", True, False, 24), ("Canceling an order or event signup leaves master catalog items and campus event schedules intact.", False, False, 24)], bullet=True))
-    body.append(p_runs([("Update Anomaly: ", True, False, 24), ("Updating a teacher's cabin room or consultation hours happens in exactly one place (Faculties table).", False, False, 24)], bullet=True))
+    body.append(p("4.1 Relational Anomalies Addressed", bold=True, sz=22, before=20, after=15))
+    body.append(p_runs([("Insertion Anomaly: ", True, False, 22), ("Rooms, courses, and faculties can be added independently without requiring dummy assignments.", False, False, 22)], bullet=True, after=30))
+    body.append(p_runs([("Deletion Anomaly: ", True, False, 22), ("Canceling an order or event signup leaves master catalog items and campus event schedules intact.", False, False, 22)], bullet=True, after=30))
+    body.append(p_runs([("Update Anomaly: ", True, False, 22), ("Updating a teacher's cabin room or consultation hours happens in exactly one place (Faculties table).", False, False, 22)], bullet=True, after=30))
 
-    body.append(p("4.2 Step-by-Step Normalization Process", bold=True, sz=24, before=60, after=30))
-    body.append(p_runs([("UNF to 1NF: ", True, False, 24), ("Eliminate repeating item arrays and multi-value schedule entries; enforce atomic attributes under primary keys.", False, False, 24)], bullet=True))
-    body.append(p_runs([("1NF to 2NF: ", True, False, 24), ("Eliminate partial functional dependencies in composite key tables: decompose Order Lines into Cafeteria_Items and Cafeteria_Order_Items.", False, False, 24)], bullet=True))
-    body.append(p_runs([("2NF to 3NF: ", True, False, 24), ("Eliminate transitive dependencies (room_id -> block_id -> block_name): decompose spatial details into Campus_Blocks and Campus_Rooms.", False, False, 24)], bullet=True))
-    body.append(p_runs([("3NF to BCNF: ", True, False, 24), ("Ensure every determinant is a superkey. In Faculty_Timetables, {faculty_id, day, period} -> room_id and {room_id, day, period} -> faculty_id are candidate keys enforced by composite UNIQUE constraints, completely preventing double-booking.", False, False, 24)], bullet=True))
+    body.append(p("4.2 Step-by-Step Normalization Process", bold=True, sz=22, before=25, after=15))
+    body.append(p_runs([("UNF to 1NF: ", True, False, 22), ("Eliminate repeating item arrays and multi-value schedule entries; enforce atomic attributes under primary keys.", False, False, 22)], bullet=True, after=30))
+    body.append(p_runs([("1NF to 2NF: ", True, False, 22), ("Eliminate partial functional dependencies in composite key tables: decompose Order Lines into Cafeteria_Items and Cafeteria_Order_Items.", False, False, 22)], bullet=True, after=30))
+    body.append(p_runs([("2NF to 3NF: ", True, False, 22), ("Eliminate transitive dependencies (room_id -> block_id -> block_name): decompose spatial details into Campus_Blocks and Campus_Rooms.", False, False, 22)], bullet=True, after=30))
+    body.append(p_runs([("3NF to BCNF: ", True, False, 22), ("Ensure every determinant is a superkey. In Faculty_Timetables, {faculty_id, day, period} -> room_id and {room_id, day, period} -> faculty_id are candidate keys enforced by composite UNIQUE constraints, completely preventing double-booking.", False, False, 22)], bullet=True, after=30))
 
-    body.append(p("4.3 Core Functional Dependencies (FDs) Summary", bold=True, sz=24, before=60, after=30))
+    body.append(p("4.3 Core Functional Dependencies (FDs) Summary", bold=True, sz=22, before=30, after=15))
     fd_headers = ["FD #", "Determinant (X)", "Dependent Attributes (Y)", "Target Table"]
     fd_rows = [
         ["FD 1", "user_id", "role_id, register_number, full_name, email, is_active", "Users"],
@@ -297,10 +310,10 @@ def build_cia1_submission():
         ["FD 14", "ticket_id", "student_id, category, room_id, priority, status", "Grievances"],
         ["FD 15", "resource_id", "dept_id, uploaded_by_faculty_id, resource_type, file_url", "Academic_Resources"]
     ]
-    body.append(table(fd_headers, fd_rows, [800, 2600, 4200, 1800]))
+    body.append(table(fd_headers, fd_rows, [800, 2600, 4200, 1800], compact=True))
 
-    body.append(p("4.4 Final Normalized Relational Schema Specification", bold=True, sz=24, before=60, after=30))
-    body.append(p("The 34 final BCNF relations are specified below (primary keys underlined; foreign keys marked with *):", sz=24, align="both", before=0, after=30))
+    body.append(p("4.4 Final Normalized Relational Schema Specification", bold=True, sz=22, before=30, after=15))
+    body.append(p("The 34 final BCNF relations are specified below (primary keys underlined; foreign keys marked with *):", sz=22, align="both", before=0, after=15))
     body.append(code_box(
 """1. Roles(role_id, role_name, role_description) | 2. Schools(school_id, school_name, school_dean)
 3. Departments(dept_id, school_id*, dept_name, hod_name) | 4. Campus_Blocks(block_id, block_code, block_name, total_floors)
@@ -331,20 +344,20 @@ def build_cia1_submission():
 31. Event_Registrations(registration_id, event_id*, user_id*, qr_ticket_hash, has_attended)
 32. Grievances(ticket_id, student_id*, category, room_id*, ticket_subject, priority, status)
 33. Grievance_Audit_Logs(log_id, ticket_id*, changed_by_user_id*, previous_status, new_status, action_timestamp)
-34. Academic_Resources(resource_id, dept_id*, uploaded_by_faculty_id*, resource_type, course_code, file_url, download_count)"""
-    ))
+34. Academic_Resources(resource_id, dept_id*, uploaded_by_faculty_id*, resource_type, course_code, file_url, download_count)""",
+sz="15.5"))
 
     # =========================================================================
     # SECTION 5: RELATIONAL SCHEMA & DATA DICTIONARY — [2 MARKS]
     # =========================================================================
     body.append(page_break())
-    body.append(p("Section 5: Relational Database Schema & Data Dictionary — [2 Marks]", bold=True, sz=28, before=100, after=50))
+    body.append(p("Section 5: Relational Database Schema & Data Dictionary — [2 Marks]", bold=True, sz=26, before=40, after=20))
     body.append(p(
         "Formal conversion rules were applied to translate the conceptual ERD into relational tables: "
         "Strong entities map directly to tables; subtype entities inherit primary keys (ON DELETE CASCADE); "
         "1:N relationships embed parent foreign keys; M:N relationships translate into associative junction tables. "
         "Integrity constraints (NOT NULL, UNIQUE, CHECK, referential CASCADE/RESTRICT/SET NULL) guarantee ACID data consistency.",
-        sz=24, align="both", before=0, after=60
+        sz=22, align="both", before=0, after=30
     ))
 
     dd_headers = ["Table Name", "Primary Key", "Foreign Keys", "Data Types & Integrity Constraints"]
@@ -379,20 +392,20 @@ def build_cia1_submission():
         ["Grievance_Audit_Logs", "log_id (INT)", "ticket_id -> Grievances (CASCADE), changed_by -> Users", "previous_status, new_status, action_timestamp, action_comment"],
         ["Academic_Resources", "resource_id (INT)", "dept_id -> Depts, uploaded_by -> Faculties", "resource_type (CHECK: SYLLABUS, LAB_MANUAL, PYQ), course_code, file_url, download_count"]
     ]
-    body.append(table(dd_headers, dd_rows, [1800, 1500, 2600, 3500]))
+    body.append(table(dd_headers, dd_rows, [1800, 1500, 2600, 3500], compact=True))
 
     # =========================================================================
     # SECTION 6: DATABASE CREATION & DATA POPULATION — [3 MARKS]
     # =========================================================================
     body.append(page_break())
-    body.append(p("Section 6: Database Creation & Data Population — [3 Marks]", bold=True, sz=28, before=100, after=50))
+    body.append(p("Section 6: Database Creation & Data Population — [3 Marks]", bold=True, sz=26, before=40, after=20))
     body.append(p(
         "All 34 tables were authored in ANSI SQL with complete integrity constraints in UniChrist_Database_Schema_and_Data.sql. "
         "The script was executed inside an ACID-compliant relational engine. Representative DDL, DML, and verified terminal execution logs are presented below:",
-        sz=24, align="both", before=0, after=50
+        sz=22, align="both", before=0, after=25
     ))
 
-    body.append(p("6.1 Core DDL Listing (Spatial Rooms, Timetable & Cafeteria)", bold=True, sz=22, before=30, after=20))
+    body.append(p("6.1 Core DDL Listing (Spatial Rooms, Timetable & Cafeteria)", bold=True, sz=22, before=15, after=10))
     body.append(code_box(
 """-- Campus Rooms with Floor Check & Block Foreign Key
 CREATE TABLE Campus_Rooms (
@@ -427,10 +440,9 @@ CREATE TABLE Cafeteria_Orders (
     token_number INTEGER NOT NULL, total_amount NUMERIC(10,2) NOT NULL CHECK (total_amount >= 0),
     payment_mode VARCHAR(30) NOT NULL CHECK (payment_mode IN ('UPI', 'CAMPUS_DIGITAL_WALLET', 'DEBIT_CARD', 'CASH')),
     order_status VARCHAR(30) NOT NULL CHECK (order_status IN ('PLACED', 'PREPARING', 'READY_FOR_PICKUP', 'COLLECTED'))
-);"""
-    ))
+);""", sz="15"))
 
-    body.append(p("6.2 Verified Database Execution Output Proofs (Live Terminal Logs)", bold=True, sz=22, before=50, after=20))
+    body.append(p("6.2 Verified Database Execution Output Proofs (Live Terminal Logs)", bold=True, sz=22, before=20, after=10))
     body.append(code_box(
 """sqlite> SELECT f.faculty_id, u.full_name AS faculty_name, f.designation,
                cr.room_number, cr.room_type, cb.block_name, ft.course_code, ft.class_section
@@ -470,19 +482,18 @@ Block B (Labs & Research)| FOUR_WHEELER: Total 1, Occ 1, Avail 0
 * Grievance SLA: Ticket #1 (Lab 201 Workstation 14 Screen Flickering) -> OPEN -> IN_PROGRESS by IT/Security Team
 * Resources: BCA381-4 DBMS Lab Manual (84 Downloads) | PYQ Exam Bank (142 Downloads) by Dr Hemanth K S
 
-[OK] All 34 tables populated; 10 operational benchmarks executed with 0 errors. ACID compliance certified."""
-    ))
+[OK] All 34 tables populated; 10 operational benchmarks executed with 0 errors. ACID compliance certified.""", sz="15"))
 
     # =========================================================================
     # SECTION 7: STUDENT DECLARATION & GUIDE ENDORSEMENT
     # =========================================================================
     body.append(page_break())
-    body.append(p("Section 7: Student Declaration & Guide Endorsement", bold=True, sz=28, before=100, after=50))
+    body.append(p("Section 7: Student Declaration & Guide Endorsement", bold=True, sz=26, before=40, after=20))
     body.append(p(
         "We hereby declare that this assignment report represents our authentic, original database design work developed under the supervision of "
         "Dr Hemanth K S for the course BCA381-4 (DBMS Project). All relational entity models, functional dependency analyses, BCNF normalizations, "
         "SQL DDL/DML scripts, and execution proofs were developed specifically for the UniChrist: Integrated Campus Life & Location Services Portal project.",
-        sz=24, align="both", before=0, after=100
+        sz=22, align="both", before=0, after=40
     ))
 
     sig_headers = ["Student Team Member", "Register Number", "Signature & Date"]
@@ -491,21 +502,21 @@ Block B (Labs & Research)| FOUR_WHEELER: Total 1, Occ 1, Avail 0
         ["Sonti Sri Lakshmi Aslesha", "2543140", "_______________________________"],
         ["Aadiya Naresh", "2543163", "_______________________________"]
     ]
-    body.append(table(sig_headers, sig_rows, [3400, 2400, 3600]))
+    body.append(table(sig_headers, sig_rows, [3400, 2400, 3600], compact=True))
 
-    body.append(p("Project Guide Verification & Remarks", bold=True, sz=24, before=100, after=30))
+    body.append(p("Project Guide Verification & Remarks", bold=True, sz=22, before=40, after=20))
     body.append(p(
         "I have reviewed the Database Design Document (ERD, Normalization, Relational Schema & Data Population) submitted by Team 12. "
         "The relational model comprehensively addresses all 12 modules from the approved synopsis, demonstrates rigorous normalization up to BCNF, "
         "and includes verified SQL implementation evidence.",
-        sz=24, align="both", before=0, after=80
+        sz=22, align="both", before=0, after=40
     ))
 
     guide_headers = ["Project Guide Name", "Designation & Department", "Endorsement Status & Signature"]
     guide_rows = [
         ["Dr Hemanth K S", "Associate Professor, Dept. of Computer Science\nCHRIST (Deemed to be University)", "Verified & Approved\n\n_________________________"]
     ]
-    body.append(table(guide_headers, guide_rows, [3000, 3600, 2800]))
+    body.append(table(guide_headers, guide_rows, [3000, 3600, 2800], compact=True))
 
     with open(os.path.join(temp_dir, "word", "document.xml"), "r", encoding="utf-8") as f:
         old_doc = f.read()
@@ -521,36 +532,36 @@ Block B (Labs & Research)| FOUR_WHEELER: Total 1, Occ 1, Avail 0
     with open(doc_xml_path, "w", encoding="utf-8") as f:
         f.write(full_document_xml)
 
+    # Step 5: Repackage docx
     print("=== Step 5: Repackage into Official .docx Document ===")
-    docx_filename = "DBMS_CIA1_DatabaseDesign_Team12_UniChrist.docx"
-    if os.path.exists(docx_filename):
-        os.remove(docx_filename)
+    if os.path.exists(out_docx):
+        os.remove(out_docx)
+    with zipfile.ZipFile(out_docx, 'w', zipfile.ZIP_DEFLATED) as zip_out:
+        for foldername, subfolders, filenames in os.walk(temp_dir):
+            for filename in filenames:
+                filepath = os.path.join(foldername, filename)
+                arcname = os.path.relpath(filepath, temp_dir)
+                zip_out.write(filepath, arcname)
 
-    with zipfile.ZipFile(docx_filename, "w", zipfile.ZIP_DEFLATED) as z_out:
-        for root, dirs, files in os.walk(temp_dir):
-            for file in files:
-                full_path = os.path.join(root, file)
-                rel_path = os.path.relpath(full_path, temp_dir)
-                z_out.write(full_path, rel_path)
+    print(f"[OK] Generated {os.path.basename(out_docx)} ({os.path.getsize(out_docx)} bytes)")
 
-    print(f"[OK] Generated {docx_filename} ({os.path.getsize(docx_filename)} bytes)")
-
+    # Step 6: Convert to PDF using LibreOffice
     print("=== Step 6: Convert to PDF using LibreOffice Writer (writer_pdf_Export) ===")
-    pdf_filename = "DBMS_CIA1_DatabaseDesign_Team12_UniChrist.pdf"
-    if os.path.exists(pdf_filename):
-        os.remove(pdf_filename)
-
-    cmd = [
+    if os.path.exists(out_pdf):
+        os.remove(out_pdf)
+    subprocess.run([
         "libreoffice",
-        "-env:UserInstallation=file:///tmp/lo_cia1_writer",
+        "-env:UserInstallation=file:///tmp/libreoffice_profile",
         "--headless",
         "--convert-to", "pdf:writer_pdf_Export",
-        docx_filename,
-        "--outdir", "."
-    ]
-    subprocess.run(cmd, check=True)
+        out_docx,
+        "--outdir", workspace_dir
+    ], check=True)
 
-    print(f"[OK] ONLY ONE PDF generated successfully: {pdf_filename} ({os.path.getsize(pdf_filename)} bytes)")
+    print(f"[OK] ONLY ONE PDF generated successfully: {os.path.basename(out_pdf)} ({os.path.getsize(out_pdf)} bytes)")
+
+    # Cleanup temp build directory
+    shutil.rmtree(temp_dir)
 
 if __name__ == '__main__':
-    build_cia1_submission()
+    build_cia1_documents()

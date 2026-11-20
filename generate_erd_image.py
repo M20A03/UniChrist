@@ -1,286 +1,234 @@
 #!/usr/bin/env python3
 """
-Generate a Figma-style high-resolution Entity-Relationship Diagram (ERD)
-for the UniChrist 12-Module Enterprise Architecture (34 BCNF Relational Tables).
-Styled with Figma UI design system components: rounded entity cards, color-coded
-module frames, pill badges for PK/FK, clean diamond connectors, and metadata bar.
-Sized to fit cleanly on a single page.
+Generate a Figma-style high-resolution portrait Entity-Relationship Diagram (ERD)
+image using Python Pillow (PIL).
+Canvas: 2400 x 3100 (matches standard portrait page aspect ratio ~0.774).
+Covers the whole page cleanly without dead blank space, with large, bold,
+crisply readable fonts, pill badges, and relationship lines for all 34 BCNF entities.
 """
+
 import os
-import shutil
-import subprocess
+from PIL import Image, ImageDraw, ImageFont
 
-def create_figma_erd():
-    w = 2800
-    h = 1950
+def generate_figma_erd():
+    W, H = 2400, 3100
+    im = Image.new('RGB', (W, H), color='#F8FAFC')
+    draw = ImageDraw.Draw(im)
+
+    font_bold = '/usr/share/fonts/google-carlito-fonts/Carlito-Bold.ttf'
+    font_reg = '/usr/share/fonts/google-carlito-fonts/Carlito-Regular.ttf'
+    font_mono = '/usr/share/fonts/adwaita-mono-fonts/AdwaitaMono-Regular.ttf'
+
+    f_title = ImageFont.truetype(font_bold, 36)
+    f_sub = ImageFont.truetype(font_reg, 18)
+    f_meta = ImageFont.truetype(font_bold, 16)
     
-    svg = []
-    svg.append(f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="{w}" height="{h}">
-  <defs>
-    <style>
-      .canvas {{ fill: #F8FAFC; }}
-      .grid-dot {{ fill: #E2E8F0; }}
-      
-      .canvas-title {{ font-family: 'Segoe UI', Arial, sans-serif; font-size: 30px; font-weight: 800; fill: #0F172A; text-anchor: middle; letter-spacing: -0.5px; }}
-      .canvas-sub {{ font-family: 'Segoe UI', Arial, sans-serif; font-size: 14px; fill: #64748B; text-anchor: middle; }}
-      .badge-brand {{ font-family: 'Segoe UI', Arial, sans-serif; font-size: 11px; font-weight: 700; fill: #2563EB; text-anchor: middle; }}
-      
-      .module-frame {{ fill: #FFFFFF; stroke: #CBD5E1; stroke-width: 1.5; rx: 10; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.03)); }}
-      .module-pill {{ rx: 5; }}
-      .module-pill-txt {{ font-family: 'Segoe UI', Arial, sans-serif; font-size: 11px; font-weight: 800; fill: #FFFFFF; text-transform: uppercase; letter-spacing: 0.6px; }}
-      .module-sub {{ font-family: 'Segoe UI', Arial, sans-serif; font-size: 10.5px; fill: #64748B; }}
+    f_frame_title = ImageFont.truetype(font_bold, 16)
+    f_frame_sub = ImageFont.truetype(font_reg, 14)
+    
+    f_card_hdr = ImageFont.truetype(font_bold, 16)
+    f_pill = ImageFont.truetype(font_bold, 11)
+    f_attr = ImageFont.truetype(font_mono, 14)
+    
+    f_legend_hdr = ImageFont.truetype(font_bold, 16)
+    f_legend_txt = ImageFont.truetype(font_reg, 14)
+    f_rel = ImageFont.truetype(font_bold, 12)
 
-      .card-body {{ fill: #FFFFFF; stroke: #CBD5E1; stroke-width: 1.2; rx: 6; }}
-      .card-hdr {{ rx: 6; }}
-      .card-title {{ font-family: 'Segoe UI', Arial, sans-serif; font-size: 12px; font-weight: 700; fill: #FFFFFF; text-anchor: middle; }}
-      
-      .attr-txt {{ font-family: 'Consolas', 'Courier New', monospace; font-size: 10px; fill: #1E293B; }}
-      .pk-txt {{ font-weight: bold; fill: #B45309; }}
-      .fk-txt {{ fill: #1D4ED8; font-style: italic; }}
-      .pkfk-txt {{ font-weight: bold; fill: #7E22CE; }}
-      
-      .pill-pk {{ fill: #FEF3C7; stroke: #F59E0B; stroke-width: 0.8; rx: 3; }}
-      .pill-pk-txt {{ font-family: Arial, sans-serif; font-size: 8.5px; font-weight: bold; fill: #B45309; text-anchor: middle; }}
-      
-      .pill-fk {{ fill: #DBEAFE; stroke: #3B82F6; stroke-width: 0.8; rx: 3; }}
-      .pill-fk-txt {{ font-family: Arial, sans-serif; font-size: 8.5px; font-weight: bold; fill: #1D4ED8; text-anchor: middle; }}
-      
-      .pill-pkfk {{ fill: #F3E8FF; stroke: #A855F7; stroke-width: 0.8; rx: 3; }}
-      .pill-pkfk-txt {{ font-family: Arial, sans-serif; font-size: 8px; font-weight: bold; fill: #7E22CE; text-anchor: middle; }}
+    # 1. Top Header Banner
+    draw.rounded_rectangle([30, 20, 2370, 125], radius=10, fill='#FFFFFF', outline='#CBD5E1', width=2)
+    draw.text((1200, 48), 'UniChrist : Relational Entity-Relationship Diagram (ERD)', font=f_title, fill='#0F172A', anchor='mm')
+    draw.text((1200, 80), '34 Relational Entities • Fully Normalized to BCNF • 12 Functional Modules • BCA381-4 DBMS Project', font=f_sub, fill='#475569', anchor='mm')
+    draw.text((1200, 104), 'CHRIST (Deemed to be University) • Department of Computer Science • Team 12 • Guide: Dr Hemanth K S', font=f_meta, fill='#2563EB', anchor='mm')
 
-      .conn-line {{ stroke: #64748B; stroke-width: 1.6; fill: none; }}
-      .rel-diamond {{ fill: #FFFFFF; stroke: #2563EB; stroke-width: 1.2; transform-origin: center; }}
-      .rel-txt {{ font-family: Arial, sans-serif; font-size: 8.5px; font-weight: bold; fill: #1E293B; text-anchor: middle; }}
-    </style>
-  </defs>
+    # Helper: draw module frame
+    def draw_module_frame(x, y, w, h, title, sub, pill_color):
+        draw.rounded_rectangle([x, y, x+w, y+h], radius=10, fill='#FFFFFF', outline='#CBD5E1', width=2)
+        # title pill
+        tw = len(title) * 10 + 24
+        draw.rounded_rectangle([x+16, y+10, x+16+tw, y+34], radius=5, fill=pill_color)
+        draw.text((x+24, y+22), title, font=f_frame_title, fill='#FFFFFF', anchor='lm')
+        draw.text((x+24+tw+12, y+22), sub, font=f_frame_sub, fill='#64748B', anchor='lm')
 
-  <!-- Canvas Background -->
-  <rect width="100%" height="100%" class="canvas"/>
-
-  <!-- Top Figma Frame Header -->
-  <g transform="translate(1400, 42)">
-    <rect x="-380" y="-28" width="760" height="74" fill="#FFFFFF" stroke="#E2E8F0" rx="8"/>
-    <text y="-2" class="canvas-title">UniChrist : Entity-Relationship Diagram (ERD)</text>
-    <text y="20" class="canvas-sub">34 Relational Entities &bull; Normalized to BCNF &bull; 12 Functional Modules &bull; BCA381-4 DBMS Project</text>
-    <text y="38" class="badge-brand">CHRIST (Deemed to be University) &bull; Dept of Computer Science &bull; Team 12: Mayank Raj, Aslesha Sonti, Aadiya Naresh &bull; Guide: Dr Hemanth K S</text>
-  </g>
-''')
-
-    # Helper function to draw Figma Entity Card
+    # Helper: draw entity card
     def draw_card(x, y, w, title, attrs, hdr_color):
-        hh = 22
-        rh = 15.5
-        bh = len(attrs) * rh + 6
+        hh = 32
+        rh = 22
+        bh = len(attrs) * rh + 12
         th = hh + bh
-        out = [f'  <g transform="translate({x}, {y})">']
-        # Card Body
-        out.append(f'    <rect width="{w}" height="{th}" class="card-body"/>')
-        # Card Header
-        out.append(f'    <rect width="{w}" height="{hh}" class="card-hdr" fill="{hdr_color}"/>')
-        out.append(f'    <text x="{w/2}" y="15" class="card-title">{title}</text>')
-        # Attribute rows
-        cy = hh + 12
+        
+        # Body
+        draw.rounded_rectangle([x, y, x+w, y+th], radius=7, fill='#FFFFFF', outline='#CBD5E1', width=1)
+        # Header
+        draw.rounded_rectangle([x, y, x+w, y+hh], radius=7, fill=hdr_color)
+        draw.text((x + w/2, y + 16), title, font=f_card_hdr, fill='#FFFFFF', anchor='mm')
+        
+        # Attributes
+        cy = y + hh + 16
         for atype, aname in attrs:
             if 'PK,FK' in atype or 'PK/FK' in atype:
-                out.append(f'    <rect x="6" y="{cy-9}" width="30" height="12" class="pill-pkfk"/>')
-                out.append(f'    <text x="21" y="{cy}" class="pill-pkfk-txt">PK,FK</text>')
-                out.append(f'    <text x="40" y="{cy}" class="attr-txt pkfk-txt">{aname}</text>')
+                draw.rounded_rectangle([x+8, cy-10, x+48, cy+8], radius=4, fill='#F3E8FF', outline='#A855F7')
+                draw.text((x+28, cy-1), 'PK,FK', font=f_pill, fill='#7E22CE', anchor='mm')
+                draw.text((x+54, cy-1), aname, font=f_attr, fill='#7E22CE', anchor='lm')
             elif 'PK' in atype:
-                out.append(f'    <rect x="6" y="{cy-9}" width="18" height="12" class="pill-pk"/>')
-                out.append(f'    <text x="15" y="{cy}" class="pill-pk-txt">PK</text>')
-                out.append(f'    <text x="28" y="{cy}" class="attr-txt pk-txt">{aname}</text>')
+                draw.rounded_rectangle([x+8, cy-10, x+34, cy+8], radius=4, fill='#FEF3C7', outline='#F59E0B')
+                draw.text((x+21, cy-1), 'PK', font=f_pill, fill='#B45309', anchor='mm')
+                draw.text((x+40, cy-1), aname, font=f_attr, fill='#B45309', anchor='lm')
             elif 'FK' in atype:
-                out.append(f'    <rect x="6" y="{cy-9}" width="18" height="12" class="pill-fk"/>')
-                out.append(f'    <text x="15" y="{cy}" class="pill-fk-txt">FK</text>')
-                out.append(f'    <text x="28" y="{cy}" class="attr-txt fk-txt">{aname}</text>')
+                draw.rounded_rectangle([x+8, cy-10, x+34, cy+8], radius=4, fill='#DBEAFE', outline='#3B82F6')
+                draw.text((x+21, cy-1), 'FK', font=f_pill, fill='#1D4ED8', anchor='mm')
+                draw.text((x+40, cy-1), aname, font=f_attr, fill='#1D4ED8', anchor='lm')
             else:
-                out.append(f'    <text x="18" y="{cy}" class="attr-txt">{aname}</text>')
+                draw.text((x+20, cy-1), aname, font=f_attr, fill='#334155', anchor='lm')
             cy += rh
-        out.append('  </g>')
-        return '\n'.join(out)
+        return th
 
-    # Helper function to draw Figma Module Frame
-    def draw_frame(x, y, w, h, title, sub, pill_color):
-        return f'''  <!-- Module Frame: {title} -->
-  <rect x="{x}" y="{y}" width="{w}" height="{h}" class="module-frame"/>
-  <rect x="{x+12}" y="{y+10}" width="{len(title)*7.5 + 16}" height="18" class="module-pill" fill="{pill_color}"/>
-  <text x="{x+20}" y="{y+23}" class="module-pill-txt">{title}</text>
-  <text x="{x+20 + len(title)*7.5 + 24}" y="{y+23}" class="module-sub">{sub}</text>'''
+    # Helper: draw relationship connector
+    def draw_rel(x1, y1, x2, y2, card, mx, my):
+        draw.line([x1, y1, x2, y2], fill='#64748B', width=2)
+        # Diamond
+        points = [(mx, my-10), (mx+14, my), (mx, my+10), (mx-14, my)]
+        draw.polygon(points, fill='#FFFFFF', outline='#2563EB')
+        draw.text((mx, my), card, font=f_rel, fill='#0F172A', anchor='mm')
 
-    # Layout Grid: 3 Rows
-    # ROW 1 (y: 95 to 680)
-    # Zone 1: Demographics & Auth (w: 920, h: 575)
-    # Zone 2: Spatial & Timetable (w: 920, h: 575)
-    # Zone 3: Cafeteria Pre-Ordering (w: 860, h: 575)
-    
-    # Module 0: Demographics & Auth (Indigo #2563EB)
-    svg.append(draw_frame(30, 95, 920, 565, "Module 0: Core Demographics & RBAC", "Authentication, Academic Hierarchy, Subtypes", "#2563EB"))
-    svg.append(draw_card(50, 135, 190, "Roles", [("PK", "role_id"), ("REG", "role_name (UQ)"), ("REG", "role_description")], "#1D4ED8"))
-    svg.append(draw_card(260, 135, 230, "Users", [("PK", "user_id"), ("FK", "role_id"), ("REG", "register_number (UQ)"), ("REG", "full_name"), ("REG", "email (UQ)"), ("REG", "password_hash"), ("REG", "is_active")], "#1D4ED8"))
-    svg.append(draw_card(510, 135, 195, "Schools", [("PK", "school_id"), ("REG", "school_name (UQ)"), ("REG", "school_dean")], "#1D4ED8"))
-    svg.append(draw_card(725, 135, 205, "Departments", [("PK", "dept_id"), ("FK", "school_id"), ("REG", "dept_name (UQ)"), ("REG", "hod_name")], "#1D4ED8"))
-    svg.append(draw_card(120, 395, 210, "Students", [("PK,FK", "student_id (Users)"), ("FK", "dept_id"), ("REG", "class_section"), ("REG", "semester"), ("REG", "batch_year")], "#3B82F6"))
-    svg.append(draw_card(420, 395, 230, "Faculties", [("PK,FK", "faculty_id (Users)"), ("FK", "dept_id"), ("REG", "designation"), ("FK", "cabin_room_id"), ("REG", "office_extension")], "#3B82F6"))
+    # =========================================================================
+    # ROW 1 (Y: 140 to 715)
+    # =========================================================================
+    # Left: Module 0: Core Demographics & RBAC (W: 1140)
+    draw_module_frame(30, 140, 1140, 565, "MODULE 0: CORE DEMOGRAPHICS & AUTH", "Users, Roles, Schools, Depts, Subtypes", "#2563EB")
+    draw_card(45, 185, 215, "Roles", [("PK", "role_id"), ("REG", "role_name (UQ)"), ("REG", "role_description")], "#1D4ED8")
+    draw_card(275, 185, 280, "Users", [("PK", "user_id"), ("FK", "role_id"), ("REG", "register_number (UQ)"), ("REG", "full_name"), ("REG", "email (UQ)"), ("REG", "password_hash"), ("REG", "is_active")], "#1D4ED8")
+    draw_card(570, 185, 255, "Schools", [("PK", "school_id"), ("REG", "school_name (UQ)"), ("REG", "school_dean")], "#1D4ED8")
+    draw_card(840, 185, 315, "Departments", [("PK", "dept_id"), ("FK", "school_id"), ("REG", "dept_name (UQ)"), ("REG", "hod_name")], "#1D4ED8")
+    draw_card(140, 460, 320, "Students", [("PK,FK", "student_id (Users)"), ("FK", "dept_id"), ("REG", "class_section"), ("REG", "semester"), ("REG", "batch_year")], "#3B82F6")
+    draw_card(550, 460, 330, "Faculties", [("PK,FK", "faculty_id (Users)"), ("FK", "dept_id"), ("REG", "designation"), ("FK", "cabin_room_id"), ("REG", "office_extension")], "#3B82F6")
 
-    # Modules 9 & 12: Spatial Directory & Faculty Schedule Engine (Emerald #059669 / Violet #7C3AED)
-    svg.append(draw_frame(970, 95, 920, 565, "Modules 9 & 12: Spatial Directory & Faculty Timetables", "Dynamic period timetable & real-time location resolution", "#7C3AED"))
-    svg.append(draw_card(990, 135, 200, "Campus_Blocks", [("PK", "block_id"), ("REG", "block_code (UQ)"), ("REG", "block_name"), ("REG", "total_floors"), ("REG", "latitude/longitude")], "#059669"))
-    svg.append(draw_card(1210, 135, 215, "Campus_Rooms", [("PK", "room_id"), ("FK", "block_id"), ("REG", "room_number"), ("REG", "floor_number"), ("REG", "room_type"), ("REG", "seating_capacity")], "#059669"))
-    svg.append(draw_card(1445, 135, 235, "Faculty_Timetables", [("PK", "schedule_id"), ("FK", "faculty_id"), ("REG", "day_of_week"), ("REG", "period_number"), ("REG", "start/end_time"), ("FK", "room_id"), ("REG", "course_code"), ("REG", "class_section")], "#6D28D9"))
-    svg.append(draw_card(1210, 395, 235, "Faculty_Status_Overrides", [("PK", "override_id"), ("FK", "faculty_id"), ("REG", "override_date"), ("REG", "start/end_time"), ("REG", "status_type"), ("FK", "assigned_room_id"), ("REG", "notes")], "#6D28D9"))
+    # Right: Modules 9 & 12: Spatial Directory & Faculty Timetables (W: 1180)
+    draw_module_frame(1190, 140, 1180, 565, "MODULES 9 & 12: SPATIAL DIRECTORY & TIMETABLES", "Blocks, Rooms, Weekly Timetables & Status Overrides", "#7C3AED")
+    draw_card(1205, 185, 260, "Campus_Blocks", [("PK", "block_id"), ("REG", "block_code (UQ)"), ("REG", "block_name"), ("REG", "total_floors"), ("REG", "latitude / longitude")], "#059669")
+    draw_card(1485, 185, 280, "Campus_Rooms", [("PK", "room_id"), ("FK", "block_id"), ("REG", "room_number"), ("REG", "floor_number"), ("REG", "room_type"), ("REG", "seating_capacity")], "#059669")
+    draw_card(1785, 185, 330, "Faculty_Timetables", [("PK", "schedule_id"), ("FK", "faculty_id"), ("REG", "day_of_week"), ("REG", "period_number"), ("REG", "start_time / end_time"), ("FK", "room_id"), ("REG", "course_code")], "#6D28D9")
+    draw_card(1485, 460, 330, "Faculty_Status_Overrides", [("PK", "override_id"), ("FK", "faculty_id"), ("REG", "override_date"), ("REG", "start_time / end_time"), ("REG", "status_type"), ("FK", "assigned_room_id")], "#6D28D9")
 
-    # Module 1: Smart Cafeteria Pre-Ordering (Amber #D97706)
-    svg.append(draw_frame(1910, 95, 860, 565, "Module 1: Smart Cafeteria Pre-Ordering", "Counters, live stock menu, digital token queue & bill lines", "#D97706"))
-    svg.append(draw_card(1930, 135, 195, "Cafeteria_Vendors", [("PK", "vendor_id"), ("REG", "vendor_name"), ("FK", "block_id"), ("REG", "contact_phone"), ("REG", "is_open")], "#B45309"))
-    svg.append(draw_card(2145, 135, 205, "Cafeteria_Items", [("PK", "item_id"), ("FK", "vendor_id"), ("REG", "item_name"), ("REG", "category"), ("REG", "price"), ("REG", "is_available"), ("REG", "stock_qty")], "#B45309"))
-    svg.append(draw_card(2370, 135, 205, "Cafeteria_Orders", [("PK", "order_id"), ("FK", "user_id"), ("FK", "vendor_id"), ("REG", "order_time"), ("REG", "token_number"), ("REG", "total_amount"), ("REG", "order_status")], "#B45309"))
-    svg.append(draw_card(2145, 395, 205, "Cafeteria_Order_Items", [("PK", "order_item_id"), ("FK", "order_id"), ("FK", "item_id"), ("REG", "quantity"), ("REG", "unit_price"), ("REG", "subtotal")], "#D97706"))
+    # Connectors Row 1
+    draw_rel(260, 220, 275, 220, "1:N", 267, 220)
+    draw_rel(825, 220, 840, 220, "1:N", 832, 220)
+    draw_rel(380, 385, 270, 460, "1:1", 325, 420)
+    draw_rel(480, 385, 600, 460, "1:1", 540, 420)
+    draw_rel(1465, 220, 1485, 220, "1:N", 1475, 220)
+    draw_rel(1765, 220, 1785, 220, "1:N", 1775, 220)
 
-    # ROW 2 (y: 680 to 1240)
-    # Zone 4: Bookstore (Module 2) (w: 660, h: 540)
-    # Zone 5: Medical Clinic (Module 3) (w: 640, h: 540)
-    # Zone 6: Lost & Found (Module 4) (w: 670, h: 540)
-    # Zone 7: Library OPAC (Module 5) (w: 750, h: 540)
+    # =========================================================================
+    # ROW 2 (Y: 725 to 1300)
+    # =========================================================================
+    # Left: Module 1: Smart Cafeteria Pre-Ordering (W: 1140)
+    draw_module_frame(30, 725, 1140, 565, "MODULE 1: CAFETERIA PRE-ORDERING", "Counters, live stock menu, FIFO token queue & order lines", "#D97706")
+    draw_card(45, 770, 255, "Cafeteria_Vendors", [("PK", "vendor_id"), ("REG", "vendor_name"), ("FK", "block_id"), ("REG", "contact_phone"), ("REG", "is_open")], "#B45309")
+    draw_card(320, 770, 275, "Cafeteria_Items", [("PK", "item_id"), ("FK", "vendor_id"), ("REG", "item_name"), ("REG", "category"), ("REG", "price"), ("REG", "is_available"), ("REG", "stock_quantity")], "#B45309")
+    draw_card(615, 770, 280, "Cafeteria_Orders", [("PK", "order_id"), ("FK", "user_id"), ("FK", "vendor_id"), ("REG", "order_timestamp"), ("REG", "token_number"), ("REG", "total_amount"), ("REG", "order_status")], "#B45309")
+    draw_card(320, 1030, 280, "Cafeteria_Order_Items", [("PK", "order_item_id"), ("FK", "order_id"), ("FK", "item_id"), ("REG", "quantity"), ("REG", "unit_price"), ("REG", "subtotal")], "#D97706")
 
-    # Module 2: Bookstore (Rose #E11D48)
-    svg.append(draw_frame(30, 680, 660, 540, "Module 2: Bookstore & Uniforms", "Merchandise, inventory & booking orders", "#E11D48"))
-    svg.append(draw_card(50, 720, 180, "Store_Categories", [("PK", "category_id"), ("REG", "category_name (UQ)")], "#BE123C"))
-    svg.append(draw_card(250, 720, 215, "Store_Inventory", [("PK", "product_id"), ("FK", "category_id"), ("REG", "product_code (UQ)"), ("REG", "product_name"), ("REG", "unit_price"), ("REG", "stock_qty"), ("REG", "reorder_level")], "#BE123C"))
-    svg.append(draw_card(485, 720, 185, "Store_Orders", [("PK", "store_order_id"), ("FK", "user_id"), ("REG", "order_date"), ("REG", "total_amount"), ("REG", "order_status")], "#BE123C"))
-    svg.append(draw_card(250, 990, 215, "Store_Order_Items", [("PK", "order_item_id"), ("FK", "store_order_id"), ("FK", "product_id"), ("REG", "quantity"), ("REG", "unit_price"), ("REG", "subtotal")], "#E11D48"))
+    # Right: Module 2: Bookstore & Uniforms (W: 1180)
+    draw_module_frame(1190, 725, 1180, 565, "MODULE 2: BOOKSTORE & UNIFORMS", "Merchandise catalog, stock management & itemized store orders", "#E11D48")
+    draw_card(1205, 770, 260, "Store_Categories", [("PK", "category_id"), ("REG", "category_name (UQ)"), ("REG", "description")], "#BE123C")
+    draw_card(1485, 770, 285, "Store_Inventory", [("PK", "product_id"), ("FK", "category_id"), ("REG", "product_code (UQ)"), ("REG", "product_name"), ("REG", "unit_price"), ("REG", "stock_quantity")], "#BE123C")
+    draw_card(1790, 770, 280, "Store_Orders", [("PK", "store_order_id"), ("FK", "user_id"), ("REG", "order_date"), ("REG", "total_amount"), ("REG", "order_status")], "#BE123C")
+    draw_card(1485, 1030, 285, "Store_Order_Items", [("PK", "store_order_item_id"), ("FK", "store_order_id"), ("FK", "product_id"), ("REG", "quantity"), ("REG", "unit_price"), ("REG", "subtotal")], "#E11D48")
 
-    # Module 3: Health Clinic (Cyan #0891B2)
-    svg.append(draw_frame(710, 680, 640, 540, "Module 3: Health & Medical Room", "Patient check-ins, vitals & prescriptions", "#0891B2"))
-    svg.append(draw_card(730, 720, 220, "Medical_Visits", [("PK", "visit_id"), ("FK", "student_id"), ("FK", "attending_staff_id"), ("REG", "checkin_time"), ("REG", "symptoms"), ("REG", "temp/bp"), ("REG", "is_emergency"), ("REG", "disposition")], "#0E7490"))
-    svg.append(draw_card(970, 720, 215, "Medical_Prescriptions", [("PK", "prescription_id"), ("FK", "visit_id"), ("REG", "medicine_name"), ("REG", "dosage"), ("REG", "quantity"), ("REG", "instructions")], "#0E7490"))
+    # Connectors Row 2
+    draw_rel(300, 810, 320, 810, "1:N", 310, 810)
+    draw_rel(595, 810, 615, 810, "1:N", 605, 810)
+    draw_rel(1465, 810, 1485, 810, "1:N", 1475, 810)
+    draw_rel(1770, 810, 1790, 810, "1:N", 1780, 810)
 
-    # Module 4: Lost & Found (Teal #0D9488)
-    svg.append(draw_frame(1370, 680, 670, 540, "Module 4: Lost & Found Vault", "Recovered property, claims & handovers", "#0D9488"))
-    svg.append(draw_card(1390, 720, 215, "Lost_Found_Items", [("PK", "item_id"), ("FK", "reported_by_user_id"), ("REG", "item_title"), ("REG", "category"), ("REG", "photo_url"), ("FK", "found_at_room_id"), ("REG", "date_found"), ("REG", "status")], "#0F766E"))
-    svg.append(draw_card(1625, 720, 220, "Lost_Found_Claims", [("PK", "claim_id"), ("FK", "item_id"), ("FK", "claimed_by_user_id"), ("REG", "claim_desc"), ("REG", "claim_date"), ("REG", "verification_status"), ("FK", "handed_over_by")], "#0F766E"))
+    # =========================================================================
+    # ROW 3 (Y: 1310 to 1870)
+    # =========================================================================
+    # Left: Module 3: Health & Medical Room (W: 740)
+    draw_module_frame(30, 1310, 740, 550, "MODULE 3: HEALTH CLINIC", "Visits, vitals & prescriptions", "#0891B2")
+    draw_card(45, 1355, 300, "Medical_Visits", [("PK", "visit_id"), ("FK", "student_id"), ("FK", "attending_staff_id"), ("REG", "checkin_time"), ("REG", "symptoms_observed"), ("REG", "temp / bp"), ("REG", "disposition")], "#0E7490")
+    draw_card(365, 1355, 290, "Medical_Prescriptions", [("PK", "prescription_id"), ("FK", "visit_id"), ("REG", "medicine_name"), ("REG", "dosage"), ("REG", "qty_dispensed"), ("REG", "instructions")], "#0E7490")
 
-    # Module 5: Library OPAC (Slate #475569)
-    svg.append(draw_frame(2060, 680, 710, 540, "Module 5: Centralized Library OPAC", "Cataloging, copies & circulation lending", "#475569"))
-    svg.append(draw_card(2080, 720, 175, "Book_Categories", [("PK", "category_id"), ("REG", "category_name (UQ)")], "#334155"))
-    svg.append(draw_card(2275, 720, 215, "Library_Books", [("PK", "book_id"), ("REG", "isbn (UQ)"), ("REG", "title"), ("REG", "author"), ("FK", "category_id"), ("REG", "total_copies"), ("REG", "available_copies"), ("REG", "shelf_location")], "#334155"))
-    svg.append(draw_card(2510, 720, 220, "Library_Circulation", [("PK", "issue_id"), ("FK", "book_id"), ("FK", "user_id"), ("REG", "issued_date"), ("REG", "due_date"), ("REG", "returned_date"), ("REG", "fine_amount"), ("REG", "status")], "#334155"))
+    # Middle: Module 4: Lost & Found Vault (W: 750)
+    draw_module_frame(790, 1310, 750, 550, "MODULE 4: LOST & FOUND", "Found property & claims vault", "#0D9488")
+    draw_card(805, 1355, 290, "Lost_Found_Items", [("PK", "item_id"), ("FK", "reported_by_user_id"), ("REG", "item_title"), ("REG", "category"), ("REG", "photo_url"), ("FK", "found_at_room_id"), ("REG", "status")], "#0F766E")
+    draw_card(1115, 1355, 295, "Lost_Found_Claims", [("PK", "claim_id"), ("FK", "item_id"), ("FK", "claimed_by_user_id"), ("REG", "claim_description"), ("REG", "verification_status"), ("FK", "handed_over_by")], "#0F766E")
 
-    # ROW 3 (y: 1240 to 1750)
-    # Zone 8: Smart Parking (Module 6) (w: 620, h: 480)
-    # Zone 9 & 10: Clubs & Events (Modules 7 & 8) (w: 1050, h: 480)
-    # Zone 11 & 12: Grievances & Resources (Modules 10 & 11) (w: 1040, h: 480)
+    # Right: Module 5: Central Library OPAC (W: 810)
+    draw_module_frame(1560, 1310, 810, 550, "MODULE 5: LIBRARY OPAC", "Catalog, multi-copy & loans", "#475569")
+    draw_card(1575, 1355, 230, "Book_Categories", [("PK", "category_id"), ("REG", "category_name (UQ)")], "#334155")
+    draw_card(1825, 1355, 275, "Library_Books", [("PK", "book_id"), ("REG", "isbn (UQ)"), ("REG", "title"), ("REG", "author"), ("FK", "category_id"), ("REG", "total_copies"), ("REG", "shelf_location")], "#334155")
+    draw_card(2115, 1355, 240, "Library_Circulation", [("PK", "issue_id"), ("FK", "book_id"), ("FK", "user_id"), ("REG", "issued_date"), ("REG", "due_date"), ("REG", "returned_date"), ("REG", "fine_amount")], "#334155")
 
-    # Module 6: Smart Parking (Orange #EA580C)
-    svg.append(draw_frame(30, 1240, 620, 480, "Module 6: Smart Parking Telemetry", "Bay sensors, EV charging & gate logs", "#EA580C"))
-    svg.append(draw_card(50, 1280, 200, "Parking_Slots", [("PK", "slot_id"), ("FK", "block_id"), ("REG", "slot_code (UQ)"), ("REG", "vehicle_type"), ("REG", "is_ev_charging"), ("REG", "is_occupied")], "#C2410C"))
-    svg.append(draw_card(270, 1280, 210, "Parking_Logs", [("PK", "log_id"), ("FK", "slot_id"), ("FK", "user_id"), ("REG", "vehicle_reg_number"), ("REG", "entry_time"), ("REG", "exit_time")], "#C2410C"))
+    # Connectors Row 3
+    draw_rel(345, 1400, 365, 1400, "1:N", 355, 1400)
+    draw_rel(1095, 1400, 1115, 1400, "1:N", 1105, 1400)
+    draw_rel(1805, 1400, 1825, 1400, "1:N", 1815, 1400)
+    draw_rel(2100, 1400, 2115, 1400, "1:N", 2107, 1400)
 
-    # Modules 7 & 8: Clubs & Events (Fuchsia #C026D3)
-    svg.append(draw_frame(670, 1240, 1050, 480, "Modules 7 & 8: Student Clubs & Campus Events", "Societies, rosters, fests calendar & QR digital passes", "#C026D3"))
-    svg.append(draw_card(690, 1280, 210, "Student_Clubs", [("PK", "club_id"), ("FK", "school_id"), ("REG", "club_name (UQ)"), ("REG", "club_tagline"), ("FK", "faculty_coordinator_id"), ("REG", "founded_year")], "#A21CAF"))
-    svg.append(draw_card(920, 1280, 200, "Club_Memberships", [("PK", "membership_id"), ("FK", "club_id"), ("FK", "student_id"), ("REG", "joined_date"), ("REG", "member_role")], "#A21CAF"))
-    svg.append(draw_card(1140, 1280, 220, "Campus_Events", [("PK", "event_id"), ("FK", "club_id"), ("REG", "event_title"), ("REG", "event_type"), ("FK", "venue_room_id"), ("REG", "max_registrations")], "#A21CAF"))
-    svg.append(draw_card(1380, 1280, 220, "Event_Registrations", [("PK", "registration_id"), ("FK", "event_id"), ("FK", "user_id"), ("REG", "registered_time"), ("REG", "qr_ticket_hash (UQ)"), ("REG", "has_attended")], "#A21CAF"))
+    # =========================================================================
+    # ROW 4 (Y: 1880 to 2440)
+    # =========================================================================
+    # Left: Module 6: Smart Parking (W: 740)
+    draw_module_frame(30, 1880, 740, 545, "MODULE 6: SMART PARKING", "Bay sensors, EV slots & gate entry logs", "#EA580C")
+    draw_card(45, 1925, 270, "Parking_Slots", [("PK", "slot_id"), ("FK", "block_id"), ("REG", "slot_code (UQ)"), ("REG", "vehicle_type"), ("REG", "is_ev_charging"), ("REG", "is_occupied")], "#C2410C")
+    draw_card(335, 1925, 280, "Parking_Logs", [("PK", "log_id"), ("FK", "slot_id"), ("FK", "user_id"), ("REG", "vehicle_reg_number"), ("REG", "entry_timestamp"), ("REG", "exit_timestamp")], "#C2410C")
 
-    # Modules 10 & 11: Grievance & Academic Resources (Red #DC2626 / Indigo-Gray #475569)
-    svg.append(draw_frame(1740, 1240, 1030, 480, "Modules 10 & 11: Grievances & Academic Resources", "Infrastructure issue tickets, SLA audit & syllabus vault", "#DC2626"))
-    svg.append(draw_card(1760, 1280, 215, "Grievances", [("PK", "ticket_id"), ("FK", "student_id"), ("REG", "category"), ("FK", "room_id"), ("REG", "ticket_subject"), ("REG", "priority"), ("REG", "status")], "#B91C1C"))
-    svg.append(draw_card(1995, 1280, 215, "Grievance_Audit_Logs", [("PK", "log_id"), ("FK", "ticket_id"), ("FK", "changed_by_user_id"), ("REG", "previous_status"), ("REG", "new_status"), ("REG", "action_time")], "#B91C1C"))
-    svg.append(draw_card(2230, 1280, 230, "Academic_Resources", [("PK", "resource_id"), ("FK", "dept_id"), ("FK", "uploaded_by_faculty_id"), ("REG", "resource_type"), ("REG", "course_code"), ("REG", "document_title"), ("REG", "download_count")], "#475569"))
+    # Right: Modules 7 & 8: Clubs & Campus Events (W: 1580)
+    draw_module_frame(790, 1880, 1580, 545, "MODULES 7 & 8: CLUBS & CAMPUS EVENTS", "Societies, rosters, event calendar & QR digital entry passes", "#C026D3")
+    draw_card(805, 1925, 280, "Student_Clubs", [("PK", "club_id"), ("FK", "school_id"), ("REG", "club_name (UQ)"), ("REG", "club_tagline"), ("FK", "faculty_coordinator_id"), ("REG", "founded_year")], "#A21CAF")
+    draw_card(1105, 1925, 270, "Club_Memberships", [("PK", "membership_id"), ("FK", "club_id"), ("FK", "student_id"), ("REG", "joined_date"), ("REG", "member_role")], "#A21CAF")
+    draw_card(1395, 1925, 285, "Campus_Events", [("PK", "event_id"), ("FK", "club_id"), ("REG", "event_title"), ("REG", "event_type"), ("FK", "venue_room_id"), ("REG", "max_registrations")], "#A21CAF")
+    draw_card(1700, 1925, 290, "Event_Registrations", [("PK", "registration_id"), ("FK", "event_id"), ("FK", "user_id"), ("REG", "registered_time"), ("REG", "qr_ticket_hash (UQ)"), ("REG", "has_attended")], "#A21CAF")
 
-    # Connectors & Cardinality
-    conns = [
-        # (x1, y1, x2, y2, card, mx, my)
-        (240, 165, 260, 165, "1:N", 250, 157),
-        (705, 165, 725, 165, "1:N", 715, 157),
-        (340, 290, 230, 395, "1:1", 285, 342),
-        (430, 290, 520, 395, "1:1", 475, 342),
-        (1190, 165, 1210, 165, "1:N", 1200, 157),
-        (1425, 165, 1445, 165, "1:N", 1435, 157),
-        (2125, 165, 2145, 165, "1:N", 2135, 157),
-        (2350, 165, 2370, 165, "1:N", 2360, 157),
-        (230, 755, 250, 755, "1:N", 240, 747),
-        (950, 755, 970, 755, "1:N", 960, 747),
-        (1605, 755, 1625, 755, "1:N", 1615, 747),
-        (2255, 755, 2275, 755, "1:N", 2265, 747),
-        (2490, 755, 2510, 755, "1:N", 2500, 747),
-        (250, 1315, 270, 1315, "1:N", 260, 1307),
-        (900, 1315, 920, 1315, "1:N", 910, 1307),
-        (1120, 1315, 1140, 1315, "1:N", 1130, 1307),
-        (1360, 1315, 1380, 1315, "1:N", 1370, 1307),
-        (1975, 1315, 1995, 1315, "1:N", 1985, 1307),
-    ]
+    # Connectors Row 4
+    draw_rel(315, 1970, 335, 1970, "1:N", 325, 1970)
+    draw_rel(1085, 1970, 1105, 1970, "1:N", 1095, 1970)
+    draw_rel(1375, 1970, 1395, 1970, "1:N", 1385, 1970)
+    draw_rel(1680, 1970, 1700, 1970, "1:N", 1690, 1970)
 
-    for x1, y1, x2, y2, card, mx, my in conns:
-        svg.append(f'  <line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" class="conn-line"/>')
-        svg.append(f'  <polygon points="{mx},{my-7} {mx+11},{my} {mx},{my+7} {mx-11},{my}" class="rel-diamond"/>')
-        svg.append(f'  <text x="{mx}" y="{my+3}" class="rel-txt">{card}</text>')
+    # =========================================================================
+    # ROW 5 (Y: 2445 to 2965)
+    # =========================================================================
+    # Modules 10 & 11: Grievances & Academic Study Resources (W: 2340)
+    draw_module_frame(30, 2445, 2340, 505, "MODULES 10 & 11: GRIEVANCES & ACADEMIC STUDY VAULT", "Facility defect tickets, immutable audit trail & subject study materials", "#DC2626")
+    draw_card(55, 2490, 320, "Grievances", [("PK", "ticket_id"), ("FK", "student_id"), ("REG", "category"), ("FK", "room_id"), ("REG", "ticket_subject"), ("REG", "priority"), ("REG", "status")], "#B91C1C")
+    draw_card(405, 2490, 330, "Grievance_Audit_Logs", [("PK", "log_id"), ("FK", "ticket_id"), ("FK", "changed_by_user_id"), ("REG", "previous_status"), ("REG", "new_status"), ("REG", "action_timestamp")], "#B91C1C")
+    draw_card(765, 2490, 340, "Academic_Resources", [("PK", "resource_id"), ("FK", "dept_id"), ("FK", "uploaded_by_faculty_id"), ("REG", "resource_type"), ("REG", "course_code"), ("REG", "document_title"), ("REG", "download_count")], "#475569")
 
-    # Bottom Legend & Status Bar
-    svg.append('''
-  <g transform="translate(30, 1740)">
-    <rect width="2740" height="170" fill="#FFFFFF" stroke="#CBD5E1" rx="8"/>
-    <text x="25" y="30" style="font-family: 'Segoe UI', Arial; font-size: 15px; font-weight: 800; fill: #0F172A;">FIGMA-ENGINEERED ER DIAGRAM NOTATION, CARDINALITY &amp; BCNF NORMALIZATION KEY</text>
-    
-    <g transform="translate(25, 55)">
-      <rect x="0" y="0" width="26" height="16" class="pill-pk"/>
-      <text x="13" y="12" class="pill-pk-txt">PK</text>
-      <text x="35" y="13" style="font-family: 'Segoe UI', Arial; font-size: 12px; fill: #334155;">Primary Key (Unique &amp; Non-Null)</text>
+    # Connectors Row 5
+    draw_rel(375, 2530, 405, 2530, "1:N", 390, 2530)
 
-      <rect x="270" y="0" width="26" height="16" class="pill-fk"/>
-      <text x="283" y="12" class="pill-fk-txt">FK</text>
-      <text x="305" y="13" style="font-family: 'Segoe UI', Arial; font-size: 12px; fill: #334155;">Foreign Key (Referential Integrity Constraint)</text>
+    # =========================================================================
+    # BOTTOM LEGEND & BCNF VERIFICATION BAR (Y: 2975 to 3085)
+    # =========================================================================
+    draw.rounded_rectangle([30, 2975, 2370, 3085], radius=10, fill='#FFFFFF', outline='#CBD5E1', width=2)
+    draw.text((50, 2995), 'FIGMA ER DIAGRAM NOTATION, CARDINALITY & BCNF VERIFICATION KEY', font=f_legend_hdr, fill='#0F172A')
 
-      <rect x="620" y="0" width="40" height="16" class="pill-pkfk"/>
-      <text x="640" y="12" class="pill-pkfk-txt">PK,FK</text>
-      <text x="670" y="13" style="font-family: 'Segoe UI', Arial; font-size: 12px; fill: #334155;">Entity Subtype Primary Key (Inherits Identity)</text>
+    # Legend items
+    draw.rounded_rectangle([50, 3015, 80, 3033], radius=4, fill='#FEF3C7', outline='#F59E0B')
+    draw.text((65, 3024), 'PK', font=f_pill, fill='#B45309', anchor='mm')
+    draw.text((90, 3024), 'Primary Key (Unique & Non-Null)', font=f_legend_txt, fill='#334155', anchor='lm')
 
-      <polygon points="1010,8 1021,1 1032,8 1021,15" class="rel-diamond"/>
-      <text x="1045" y="13" style="font-family: 'Segoe UI', Arial; font-size: 12px; fill: #334155;"><strong>1:1, 1:N, M:N</strong> Cardinality (M:N decomposed into associative tables)</text>
-    </g>
+    draw.rounded_rectangle([380, 3015, 410, 3033], radius=4, fill='#DBEAFE', outline='#3B82F6')
+    draw.text((395, 3024), 'FK', font=f_pill, fill='#1D4ED8', anchor='mm')
+    draw.text((420, 3024), 'Foreign Key (Referential Integrity)', font=f_legend_txt, fill='#334155', anchor='lm')
 
-    <text x="25" y="112" style="font-family: 'Segoe UI', Arial; font-size: 12px; fill: #475569;">
-      <strong>Boyce-Codd Normal Form (BCNF) Verification:</strong> All 34 entities across the 12 campus modules satisfy BCNF. Every non-trivial functional dependency determinant is a valid Candidate Key.
-    </text>
-    <text x="25" y="138" style="font-family: 'Segoe UI', Arial; font-size: 12px; font-weight: bold; fill: #2563EB;">
-      CHRIST (Deemed to be University) &bull; Department of Computer Science &bull; Course: BCA381-4 (DBMS Project) &bull; Team 12 (Mayank Raj, Aslesha Sonti, Aadiya Naresh) &bull; Guide: Dr Hemanth K S
-    </text>
-  </g>
-</svg>''')
+    draw.rounded_rectangle([730, 3015, 780, 3033], radius=4, fill='#F3E8FF', outline='#A855F7')
+    draw.text((755, 3024), 'PK,FK', font=f_pill, fill='#7E22CE', anchor='mm')
+    draw.text((790, 3024), 'Subtype Entity Key (Inherits Users PK)', font=f_legend_txt, fill='#334155', anchor='lm')
 
-    svg_str = '\n'.join(svg)
+    # Diamond symbol in legend
+    pts = [(1130, 3024-8), (1142, 3024), (1130, 3024+8), (1118, 3024)]
+    draw.polygon(pts, fill='#FFFFFF', outline='#2563EB')
+    draw.text((1152, 3024), '1:1, 1:N, M:N Cardinality (Decomposed into associative tables)', font=f_legend_txt, fill='#334155', anchor='lm')
+
+    draw.text((50, 3055), 'Boyce-Codd Normal Form (BCNF): All 34 relations satisfy BCNF. Every determinant is a candidate superkey; zero storage redundancy.', font=f_legend_txt, fill='#475569')
+    draw.text((1200, 3055), 'CHRIST (Deemed to be University) • Department of Computer Science • Course: BCA381-4 • Team 12 • Guide: Dr Hemanth K S', font=f_meta, fill='#2563EB')
+
     os.makedirs('images', exist_ok=True)
-    with open('images/erd_diagram.svg', 'w') as f:
-        f.write(svg_str)
-    print("[OK] Saved images/erd_diagram.svg")
-
-    html = f'''<!DOCTYPE html><html><head><meta charset="utf-8">
-<style>
-@page {{ size: 2800px 1950px; margin: 0; }}
-body {{ margin: 0; padding: 0; background: #F8FAFC; }}
-</style></head><body>{svg_str}</body></html>'''
-    with open('/tmp/erd_render.html', 'w') as f:
-        f.write(html)
-    
-    subprocess.run([
-        'libreoffice',
-        '-env:UserInstallation=file:///tmp/lo_erd_render',
-        '--headless',
-        '--convert-to', 'pdf',
-        '/tmp/erd_render.html',
-        '--outdir', '/tmp'
-    ], check=True)
-
-    subprocess.run([
-        'pdftoppm',
-        '-png',
-        '-r', '150',
-        '/tmp/erd_render.pdf',
-        '/tmp/erd_final'
-    ], check=True)
-
-    shutil.move('/tmp/erd_final-1.png', 'images/erd_diagram.png')
-    print(f"[OK] Rendered Figma-style images/erd_diagram.png ({os.path.getsize('images/erd_diagram.png')} bytes)")
+    out_path = 'images/erd_diagram.png'
+    im.save(out_path, format='PNG', optimize=True)
+    print(f"[OK] Rendered Figma-style Portrait PNG: {out_path} ({os.path.getsize(out_path)} bytes)")
 
 if __name__ == '__main__':
-    create_figma_erd()
+    generate_figma_erd()
