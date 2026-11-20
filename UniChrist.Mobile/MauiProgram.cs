@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using UniChrist.Mobile.Services;
 
@@ -26,7 +27,6 @@ public static class MauiProgram
 
         // Configure Production Deployed API Address
         // Default URL targets the cloud-hosted UniChrist Web API.
-        // For local development on Android Emulator, 10.0.2.2 routes to the host machine's localhost.
         var apiBaseUrl = "https://unichrist-production.up.railway.app"; 
 
         builder.Services.AddHttpClient<IAPIService, APIService>(client =>
