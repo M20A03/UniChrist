@@ -1,422 +1,512 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 1350" width="2000" height="1350">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3200 2200" width="3200" height="2200">
   <defs>
     <style>
       .canvas { fill: #FFFFFF; }
-      .header-title { font-family: 'Segoe UI', Arial, sans-serif; font-size: 28px; font-weight: 800; fill: #1F497D; text-anchor: middle; letter-spacing: 0.5px; }
-      .header-sub { font-family: 'Segoe UI', Arial, sans-serif; font-size: 14px; fill: #475569; text-anchor: middle; }
-      .section-label { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; font-weight: bold; fill: #D4AF37; letter-spacing: 1px; text-transform: uppercase; }
+      .title-main { font-family: 'Times New Roman', serif; font-size: 34px; font-weight: bold; fill: #000000; text-anchor: middle; }
+      .title-sub { font-family: 'Times New Roman', serif; font-size: 16px; fill: #333333; text-anchor: middle; }
       
-      .entity-header { fill: #1F497D; rx: 4; }
-      .entity-header-title { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; font-weight: 700; fill: #FFFFFF; text-anchor: middle; }
-      .entity-body { fill: #F8FAFC; stroke: #CBD5E1; stroke-width: 1.5; rx: 4; }
+      .zone-box { fill: #FAFAFA; stroke: #999999; stroke-width: 1.5; rx: 6; }
+      .zone-header { font-family: 'Times New Roman', serif; font-size: 14px; font-weight: bold; fill: #000000; text-transform: uppercase; }
+      .zone-sub { font-family: 'Times New Roman', serif; font-size: 11px; fill: #555555; }
+
+      .entity-header { fill: #2B4C7E; rx: 3; }
+      .entity-title { font-family: 'Times New Roman', serif; font-size: 13px; font-weight: bold; fill: #FFFFFF; text-anchor: middle; }
+      .entity-body { fill: #FFFFFF; stroke: #444444; stroke-width: 1.2; rx: 3; }
+
+      .attr-txt { font-family: 'Consolas', 'Courier New', monospace; font-size: 10.5px; fill: #000000; }
+      .pk-txt { font-weight: bold; fill: #A00000; }
+      .fk-txt { fill: #003399; font-style: italic; }
+      .pkfk-txt { font-weight: bold; fill: #660099; }
       
-      .attr-txt { font-family: 'Consolas', 'Courier New', monospace; font-size: 11px; fill: #1E293B; }
-      .pk { font-weight: bold; fill: #B45309; }
-      .fk { fill: #1D4ED8; font-style: italic; }
-      .badge-pk { font-size: 9px; fill: #B45309; font-weight: bold; }
-      .badge-fk { font-size: 9px; fill: #1D4ED8; font-weight: bold; }
-      
-      .rel-box { fill: #FFFBEB; stroke: #D4AF37; stroke-width: 1.5; rx: 12; }
-      .rel-txt { font-family: 'Segoe UI', Arial, sans-serif; font-size: 10px; font-weight: bold; fill: #78350F; text-anchor: middle; }
-      
-      .conn { stroke: #64748B; stroke-width: 1.5; fill: none; }
-      .conn-highlight { stroke: #D4AF37; stroke-width: 2; fill: none; }
-      .card-label { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11px; font-weight: bold; fill: #0F172A; }
+      .badge-pk { font-size: 9px; fill: #A00000; font-weight: bold; font-family: Arial, sans-serif; }
+      .badge-fk { font-size: 9px; fill: #003399; font-weight: bold; font-family: Arial, sans-serif; }
+      .badge-pkfk { font-size: 9px; fill: #660099; font-weight: bold; font-family: Arial, sans-serif; }
+
+      .conn { stroke: #444444; stroke-width: 1.6; fill: none; }
+      .rel-box { fill: #FFFFFF; stroke: #666666; stroke-width: 1; rx: 2; }
+      .rel-txt { font-family: Arial, sans-serif; font-size: 9px; font-weight: bold; fill: #000000; text-anchor: middle; }
     </style>
   </defs>
 
-  <rect width="2000" height="1350" class="canvas"/>
+  <rect width="100%" height="100%" class="canvas"/>
 
-  <!-- TITLE BLOCK -->
-  <rect x="40" y="20" width="1920" height="85" fill="#F1F5F9" stroke="#E2E8F0" rx="6"/>
-  <text x="1000" y="55" class="header-title">UNICHRIST: INTEGRATED CAMPUS LIFE &amp; LOCATION SERVICES PORTAL</text>
-  <text x="1000" y="82" class="header-sub">Comprehensive Entity-Relationship Diagram (ERD) &bull; Crow's Foot / Relational Conceptual Model &bull; CHRIST (Deemed to be University)</text>
-
-  <!-- ========================================================================= -->
-  <!-- MODULE 1: CORE AUTH, ROLES & ACADEMIC HIERARCHY -->
-  <!-- ========================================================================= -->
-
-  <!-- ROLES -->
-  <g transform="translate(60, 140)">
-    <rect width="180" height="90" class="entity-body"/>
-    <rect width="180" height="26" class="entity-header"/>
-    <text x="90" y="18" class="entity-header-title">ROLES</text>
-    <text x="10" y="44" class="attr-txt"><tspan class="pk">PK</tspan> role_id : INT</text>
-    <text x="10" y="62" class="attr-txt">   role_name : VARCHAR(50)</text>
-    <text x="10" y="80" class="attr-txt">   role_description : VARCHAR</text>
+  <!-- Main Header Banner -->
+  <g transform="translate(1600, 45)">
+    <text y="0" class="title-main">UniChrist: Relational Entity-Relationship Diagram (ERD)</text>
+    <text y="24" class="title-sub">Comprehensive 12-Module Enterprise Architecture &bull; 34 Relational Entities Normalized to BCNF</text>
+    <text y="44" class="title-sub" style="font-size: 13px; font-style: italic;">BCA381-4 DBMS Project &bull; Team 12: Mayank Raj Gupta (2543115), Aslesha Sonti (2543140), Aadiya Naresh (2543163) &bull; Guide: Dr Hemanth K S</text>
   </g>
 
-  <!-- USERS -->
-  <g transform="translate(300, 140)">
-    <rect width="220" height="150" class="entity-body"/>
-    <rect width="220" height="26" class="entity-header"/>
-    <text x="110" y="18" class="entity-header-title">USERS</text>
-    <text x="10" y="44" class="attr-txt"><tspan class="pk">PK</tspan> user_id : INT</text>
-    <text x="10" y="62" class="attr-txt"><tspan class="fk">FK</tspan> role_id : INT</text>
-    <text x="10" y="80" class="attr-txt">   register_number : VARCHAR</text>
-    <text x="10" y="98" class="attr-txt">   full_name : VARCHAR(120)</text>
-    <text x="10" y="116" class="attr-txt">   email : VARCHAR(120)</text>
-    <text x="10" y="134" class="attr-txt">   password_hash : VARCHAR</text>
+  <rect x="30" y="100" width="1040" height="650" class="zone-box"/>
+  <text x="45" y="122" class="zone-header">Core Demographics & Authentication (RBAC)</text>
+  <text x="45" y="136" class="zone-sub">Users, Roles, Organizational Hierarchy, Student & Faculty Subtypes</text>
+  <g transform="translate(55, 150)">
+    <rect width="220" height="83" class="entity-body"/>
+    <rect width="220" height="24" class="entity-header"/>
+    <text x="110.0" y="16" class="entity-title">Roles</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">role_id</tspan></text>
+    <text x="22" y="54" class="attr-txt">role_name (UQ)</text>
+    <text x="22" y="71" class="attr-txt">role_description</text>
   </g>
-
-  <!-- STUDENTS -->
-  <g transform="translate(180, 340)">
-    <rect width="190" height="120" class="entity-body"/>
-    <rect width="190" height="26" class="entity-header"/>
-    <text x="95" y="18" class="entity-header-title">STUDENTS</text>
-    <text x="10" y="44" class="attr-txt"><tspan class="pk">PK/FK</tspan> student_id : INT</text>
-    <text x="10" y="62" class="attr-txt"><tspan class="fk">FK</tspan>    dept_id : INT</text>
-    <text x="10" y="80" class="attr-txt">      class_section : VARCHAR</text>
-    <text x="10" y="98" class="attr-txt">      semester : INT</text>
-    <text x="10" y="114" class="attr-txt">      batch_year : VARCHAR</text>
+  <g transform="translate(305, 150)">
+    <rect width="250" height="168" class="entity-body"/>
+    <rect width="250" height="24" class="entity-header"/>
+    <text x="125.0" y="16" class="entity-title">Users</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">user_id</tspan></text>
+    <text x="8" y="54" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">role_id</tspan></text>
+    <text x="22" y="71" class="attr-txt">register_number (UQ)</text>
+    <text x="22" y="88" class="attr-txt">full_name</text>
+    <text x="22" y="105" class="attr-txt">email (UQ)</text>
+    <text x="22" y="122" class="attr-txt">password_hash</text>
+    <text x="22" y="139" class="attr-txt">phone_number</text>
+    <text x="22" y="156" class="attr-txt">is_active</text>
   </g>
-
-  <!-- FACULTIES -->
-  <g transform="translate(420, 340)">
-    <rect width="220" height="140" class="entity-body"/>
-    <rect width="220" height="26" class="entity-header"/>
-    <text x="110" y="18" class="entity-header-title">FACULTIES</text>
-    <text x="10" y="44" class="attr-txt"><tspan class="pk">PK/FK</tspan> faculty_id : INT</text>
-    <text x="10" y="62" class="attr-txt"><tspan class="fk">FK</tspan>    dept_id : INT</text>
-    <text x="10" y="80" class="attr-txt">      designation : VARCHAR</text>
-    <text x="10" y="98" class="attr-txt"><tspan class="fk">FK</tspan>    cabin_room_id : INT</text>
-    <text x="10" y="116" class="attr-txt">      office_extension : VARCHAR</text>
-    <text x="10" y="134" class="attr-txt">      consultation_hours : VARCHAR</text>
+  <g transform="translate(585, 150)">
+    <rect width="210" height="83" class="entity-body"/>
+    <rect width="210" height="24" class="entity-header"/>
+    <text x="105.0" y="16" class="entity-title">Schools</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">school_id</tspan></text>
+    <text x="22" y="54" class="attr-txt">school_name (UQ)</text>
+    <text x="22" y="71" class="attr-txt">school_dean</text>
   </g>
-
-  <!-- SCHOOLS -->
-  <g transform="translate(680, 140)">
-    <rect width="180" height="80" class="entity-body"/>
-    <rect width="180" height="26" class="entity-header"/>
-    <text x="90" y="18" class="entity-header-title">SCHOOLS</text>
-    <text x="10" y="44" class="attr-txt"><tspan class="pk">PK</tspan> school_id : INT</text>
-    <text x="10" y="62" class="attr-txt">   school_name : VARCHAR</text>
-    <text x="10" y="78" class="attr-txt">   school_dean : VARCHAR</text>
+  <g transform="translate(825, 150)">
+    <rect width="220" height="100" class="entity-body"/>
+    <rect width="220" height="24" class="entity-header"/>
+    <text x="110.0" y="16" class="entity-title">Departments</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">dept_id</tspan></text>
+    <text x="8" y="54" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">school_id</tspan></text>
+    <text x="22" y="71" class="attr-txt">dept_name (UQ)</text>
+    <text x="22" y="88" class="attr-txt">hod_name</text>
   </g>
-
-  <!-- DEPARTMENTS -->
-  <g transform="translate(680, 270)">
-    <rect width="190" height="100" class="entity-body"/>
-    <rect width="190" height="26" class="entity-header"/>
-    <text x="95" y="18" class="entity-header-title">DEPARTMENTS</text>
-    <text x="10" y="44" class="attr-txt"><tspan class="pk">PK</tspan> dept_id : INT</text>
-    <text x="10" y="62" class="attr-txt"><tspan class="fk">FK</tspan> school_id : INT</text>
-    <text x="10" y="80" class="attr-txt">   dept_name : VARCHAR(100)</text>
-    <text x="10" y="98" class="attr-txt">   hod_name : VARCHAR(120)</text>
+  <g transform="translate(150, 440)">
+    <rect width="240" height="117" class="entity-body"/>
+    <rect width="240" height="24" class="entity-header"/>
+    <text x="120.0" y="16" class="entity-title">Students</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pkfk">PK,FK </tspan><tspan class="pkfk-txt">student_id (Users)</tspan></text>
+    <text x="8" y="54" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">dept_id</tspan></text>
+    <text x="22" y="71" class="attr-txt">class_section</text>
+    <text x="22" y="88" class="attr-txt">semester</text>
+    <text x="22" y="105" class="attr-txt">batch_year</text>
   </g>
-
-  <!-- ========================================================================= -->
-  <!-- MODULE 2: CAMPUS INFRASTRUCTURE & LOCATION TIMETABLE ENGINE -->
-  <!-- ========================================================================= -->
-
-  <!-- CAMPUS BLOCKS -->
-  <g transform="translate(940, 140)">
-    <rect width="190" height="110" class="entity-body"/>
-    <rect width="190" height="26" class="entity-header"/>
-    <text x="95" y="18" class="entity-header-title">CAMPUS_BLOCKS</text>
-    <text x="10" y="44" class="attr-txt"><tspan class="pk">PK</tspan> block_id : INT</text>
-    <text x="10" y="62" class="attr-txt">   block_code : VARCHAR(20)</text>
-    <text x="10" y="80" class="attr-txt">   block_name : VARCHAR(100)</text>
-    <text x="10" y="98" class="attr-txt">   total_floors : INT</text>
+  <g transform="translate(480, 440)">
+    <rect width="260" height="134" class="entity-body"/>
+    <rect width="260" height="24" class="entity-header"/>
+    <text x="130.0" y="16" class="entity-title">Faculties</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pkfk">PK,FK </tspan><tspan class="pkfk-txt">faculty_id (Users)</tspan></text>
+    <text x="8" y="54" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">dept_id</tspan></text>
+    <text x="22" y="71" class="attr-txt">designation</text>
+    <text x="8" y="88" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">cabin_room_id</tspan></text>
+    <text x="22" y="105" class="attr-txt">office_extension</text>
+    <text x="22" y="122" class="attr-txt">consultation_hours</text>
   </g>
-
-  <!-- CAMPUS ROOMS -->
-  <g transform="translate(940, 300)">
-    <rect width="210" height="130" class="entity-body"/>
-    <rect width="210" height="26" class="entity-header"/>
-    <text x="105" y="18" class="entity-header-title">CAMPUS_ROOMS</text>
-    <text x="10" y="44" class="attr-txt"><tspan class="pk">PK</tspan> room_id : INT</text>
-    <text x="10" y="62" class="attr-txt"><tspan class="fk">FK</tspan> block_id : INT</text>
-    <text x="10" y="80" class="attr-txt">   room_number : VARCHAR(30)</text>
-    <text x="10" y="98" class="attr-txt">   floor_number : INT</text>
-    <text x="10" y="116" class="attr-txt">   room_type : VARCHAR(50)</text>
+  <rect x="1100" y="100" width="1060" height="650" class="zone-box"/>
+  <text x="1115" y="122" class="zone-header">Modules 9 & 12: Spatial Directory & Faculty Schedule Engine</text>
+  <text x="1115" y="136" class="zone-sub">Campus Blocks, Atomic Rooms, Dynamic Timetable Mapping & Status Overrides</text>
+  <g transform="translate(1125, 150)">
+    <rect width="220" height="134" class="entity-body"/>
+    <rect width="220" height="24" class="entity-header"/>
+    <text x="110.0" y="16" class="entity-title">Campus_Blocks</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">block_id</tspan></text>
+    <text x="22" y="54" class="attr-txt">block_code (UQ)</text>
+    <text x="22" y="71" class="attr-txt">block_name</text>
+    <text x="22" y="88" class="attr-txt">total_floors</text>
+    <text x="22" y="105" class="attr-txt">latitude</text>
+    <text x="22" y="122" class="attr-txt">longitude</text>
   </g>
-
-  <!-- FACULTY TIMETABLES -->
-  <g transform="translate(420, 530)">
-    <rect width="230" height="170" class="entity-body"/>
-    <rect width="230" height="26" class="entity-header"/>
-    <text x="115" y="18" class="entity-header-title">FACULTY_TIMETABLES</text>
-    <text x="10" y="44" class="attr-txt"><tspan class="pk">PK</tspan> schedule_id : INT</text>
-    <text x="10" y="62" class="attr-txt"><tspan class="fk">FK</tspan> faculty_id : INT</text>
-    <text x="10" y="80" class="attr-txt">   day_of_week : VARCHAR(15)</text>
-    <text x="10" y="98" class="attr-txt">   period_number : INT</text>
-    <text x="10" y="116" class="attr-txt">   start_time : TIME</text>
-    <text x="10" y="134" class="attr-txt">   end_time : TIME</text>
-    <text x="10" y="152" class="attr-txt"><tspan class="fk">FK</tspan> room_id : INT</text>
-    <text x="10" y="168" class="attr-txt">   course_code : VARCHAR(30)</text>
+  <g transform="translate(1375, 150)">
+    <rect width="230" height="151" class="entity-body"/>
+    <rect width="230" height="24" class="entity-header"/>
+    <text x="115.0" y="16" class="entity-title">Campus_Rooms</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">room_id</tspan></text>
+    <text x="8" y="54" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">block_id</tspan></text>
+    <text x="22" y="71" class="attr-txt">room_number</text>
+    <text x="22" y="88" class="attr-txt">floor_number</text>
+    <text x="22" y="105" class="attr-txt">room_type</text>
+    <text x="22" y="122" class="attr-txt">seating_capacity</text>
+    <text x="22" y="139" class="attr-txt">is_active</text>
   </g>
-
-  <!-- FACULTY STATUS OVERRIDES -->
-  <g transform="translate(150, 530)">
-    <rect width="220" height="140" class="entity-body"/>
-    <rect width="220" height="26" class="entity-header"/>
-    <text x="110" y="18" class="entity-header-title">FACULTY_STATUS_OVERRIDES</text>
-    <text x="10" y="44" class="attr-txt"><tspan class="pk">PK</tspan> override_id : INT</text>
-    <text x="10" y="62" class="attr-txt"><tspan class="fk">FK</tspan> faculty_id : INT</text>
-    <text x="10" y="80" class="attr-txt">   override_date : DATE</text>
-    <text x="10" y="98" class="attr-txt">   start_time / end_time : TIME</text>
-    <text x="10" y="116" class="attr-txt">   status_type : VARCHAR(50)</text>
-    <text x="10" y="134" class="attr-txt"><tspan class="fk">FK</tspan> assigned_room_id : INT</text>
+  <g transform="translate(1635, 150)">
+    <rect width="250" height="185" class="entity-body"/>
+    <rect width="250" height="24" class="entity-header"/>
+    <text x="125.0" y="16" class="entity-title">Faculty_Timetables</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">schedule_id</tspan></text>
+    <text x="8" y="54" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">faculty_id</tspan></text>
+    <text x="22" y="71" class="attr-txt">day_of_week</text>
+    <text x="22" y="88" class="attr-txt">period_number</text>
+    <text x="22" y="105" class="attr-txt">start_time</text>
+    <text x="22" y="122" class="attr-txt">end_time</text>
+    <text x="8" y="139" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">room_id</tspan></text>
+    <text x="22" y="156" class="attr-txt">course_code</text>
+    <text x="22" y="173" class="attr-txt">class_section</text>
   </g>
-
-  <!-- ========================================================================= -->
-  <!-- MODULE 3: SMART CAFETERIA & PRE-ORDERING -->
-  <!-- ========================================================================= -->
-
-  <!-- CAFETERIA VENDORS -->
-  <g transform="translate(1220, 140)">
-    <rect width="210" height="110" class="entity-body"/>
-    <rect width="210" height="26" class="entity-header"/>
-    <text x="105" y="18" class="entity-header-title">CAFETERIA_VENDORS</text>
-    <text x="10" y="44" class="attr-txt"><tspan class="pk">PK</tspan> vendor_id : INT</text>
-    <text x="10" y="62" class="attr-txt">   vendor_name : VARCHAR(100)</text>
-    <text x="10" y="80" class="attr-txt"><tspan class="fk">FK</tspan> block_id : INT</text>
-    <text x="10" y="98" class="attr-txt">   contact_phone : VARCHAR</text>
+  <g transform="translate(1375, 450)">
+    <rect width="260" height="168" class="entity-body"/>
+    <rect width="260" height="24" class="entity-header"/>
+    <text x="130.0" y="16" class="entity-title">Faculty_Status_Overrides</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">override_id</tspan></text>
+    <text x="8" y="54" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">faculty_id</tspan></text>
+    <text x="22" y="71" class="attr-txt">override_date</text>
+    <text x="22" y="88" class="attr-txt">start_time</text>
+    <text x="22" y="105" class="attr-txt">end_time</text>
+    <text x="22" y="122" class="attr-txt">status_type</text>
+    <text x="8" y="139" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">assigned_room_id</tspan></text>
+    <text x="22" y="156" class="attr-txt">notes</text>
   </g>
-
-  <!-- CAFETERIA ITEMS -->
-  <g transform="translate(1220, 300)">
-    <rect width="210" height="130" class="entity-body"/>
-    <rect width="210" height="26" class="entity-header"/>
-    <text x="105" y="18" class="entity-header-title">CAFETERIA_ITEMS</text>
-    <text x="10" y="44" class="attr-txt"><tspan class="pk">PK</tspan> item_id : INT</text>
-    <text x="10" y="62" class="attr-txt"><tspan class="fk">FK</tspan> vendor_id : INT</text>
-    <text x="10" y="80" class="attr-txt">   item_name : VARCHAR(100)</text>
-    <text x="10" y="98" class="attr-txt">   category : VARCHAR(50)</text>
-    <text x="10" y="116" class="attr-txt">   price : DECIMAL(8,2)</text>
+  <rect x="2190" y="100" width="980" height="650" class="zone-box"/>
+  <text x="2205" y="122" class="zone-header">Module 1: Smart Cafeteria Pre-Ordering</text>
+  <text x="2205" y="136" class="zone-sub">Food Vendors, Menu Catalog, Pre-Orders with Token Queue & Order Lines</text>
+  <g transform="translate(2215, 150)">
+    <rect width="220" height="117" class="entity-body"/>
+    <rect width="220" height="24" class="entity-header"/>
+    <text x="110.0" y="16" class="entity-title">Cafeteria_Vendors</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">vendor_id</tspan></text>
+    <text x="22" y="54" class="attr-txt">vendor_name</text>
+    <text x="8" y="71" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">block_id</tspan></text>
+    <text x="22" y="88" class="attr-txt">contact_phone</text>
+    <text x="22" y="105" class="attr-txt">is_open</text>
   </g>
-
-  <!-- CAFETERIA ORDERS -->
-  <g transform="translate(1480, 140)">
-    <rect width="220" height="150" class="entity-body"/>
-    <rect width="220" height="26" class="entity-header"/>
-    <text x="110" y="18" class="entity-header-title">CAFETERIA_ORDERS</text>
-    <text x="10" y="44" class="attr-txt"><tspan class="pk">PK</tspan> order_id : INT</text>
-    <text x="10" y="62" class="attr-txt"><tspan class="fk">FK</tspan> user_id : INT</text>
-    <text x="10" y="80" class="attr-txt"><tspan class="fk">FK</tspan> vendor_id : INT</text>
-    <text x="10" y="98" class="attr-txt">   token_number : INT</text>
-    <text x="10" y="116" class="attr-txt">   total_amount : DECIMAL(9,2)</text>
-    <text x="10" y="134" class="attr-txt">   order_status : VARCHAR(30)</text>
-    <text x="10" y="148" class="attr-txt">   payment_mode : VARCHAR</text>
+  <g transform="translate(2465, 150)">
+    <rect width="230" height="151" class="entity-body"/>
+    <rect width="230" height="24" class="entity-header"/>
+    <text x="115.0" y="16" class="entity-title">Cafeteria_Items</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">item_id</tspan></text>
+    <text x="8" y="54" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">vendor_id</tspan></text>
+    <text x="22" y="71" class="attr-txt">item_name</text>
+    <text x="22" y="88" class="attr-txt">category</text>
+    <text x="22" y="105" class="attr-txt">price</text>
+    <text x="22" y="122" class="attr-txt">is_available</text>
+    <text x="22" y="139" class="attr-txt">current_stock_qty</text>
   </g>
-
-  <!-- CAFETERIA ORDER ITEMS -->
-  <g transform="translate(1480, 340)">
-    <rect width="210" height="120" class="entity-body"/>
-    <rect width="210" height="26" class="entity-header"/>
-    <text x="105" y="18" class="entity-header-title">CAFETERIA_ORDER_ITEMS</text>
-    <text x="10" y="44" class="attr-txt"><tspan class="pk">PK</tspan> order_item_id : INT</text>
-    <text x="10" y="62" class="attr-txt"><tspan class="fk">FK</tspan> order_id : INT</text>
-    <text x="10" y="80" class="attr-txt"><tspan class="fk">FK</tspan> item_id : INT</text>
-    <text x="10" y="98" class="attr-txt">   quantity : INT</text>
-    <text x="10" y="114" class="attr-txt">   subtotal : DECIMAL(9,2)</text>
+  <g transform="translate(2725, 150)">
+    <rect width="225" height="151" class="entity-body"/>
+    <rect width="225" height="24" class="entity-header"/>
+    <text x="112.5" y="16" class="entity-title">Cafeteria_Orders</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">order_id</tspan></text>
+    <text x="8" y="54" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">user_id</tspan></text>
+    <text x="8" y="71" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">vendor_id</tspan></text>
+    <text x="22" y="88" class="attr-txt">order_timestamp</text>
+    <text x="22" y="105" class="attr-txt">token_number</text>
+    <text x="22" y="122" class="attr-txt">total_amount</text>
+    <text x="22" y="139" class="attr-txt">order_status</text>
   </g>
-
-  <!-- ========================================================================= -->
-  <!-- MODULE 4: SMART PARKING TELEMETRY -->
-  <!-- ========================================================================= -->
-
-  <!-- PARKING SLOTS -->
-  <g transform="translate(1740, 140)">
-    <rect width="200" height="120" class="entity-body"/>
-    <rect width="200" height="26" class="entity-header"/>
-    <text x="100" y="18" class="entity-header-title">PARKING_SLOTS</text>
-    <text x="10" y="44" class="attr-txt"><tspan class="pk">PK</tspan> slot_id : INT</text>
-    <text x="10" y="62" class="attr-txt"><tspan class="fk">FK</tspan> block_id : INT</text>
-    <text x="10" y="80" class="attr-txt">   slot_code : VARCHAR(20)</text>
-    <text x="10" y="98" class="attr-txt">   vehicle_type : VARCHAR</text>
-    <text x="10" y="114" class="attr-txt">   is_occupied : BOOLEAN</text>
+  <g transform="translate(2465, 450)">
+    <rect width="230" height="134" class="entity-body"/>
+    <rect width="230" height="24" class="entity-header"/>
+    <text x="115.0" y="16" class="entity-title">Cafeteria_Order_Items</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">order_item_id</tspan></text>
+    <text x="8" y="54" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">order_id</tspan></text>
+    <text x="8" y="71" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">item_id</tspan></text>
+    <text x="22" y="88" class="attr-txt">quantity</text>
+    <text x="22" y="105" class="attr-txt">unit_price</text>
+    <text x="22" y="122" class="attr-txt">subtotal</text>
   </g>
-
-  <!-- PARKING LOGS -->
-  <g transform="translate(1740, 310)">
-    <rect width="200" height="130" class="entity-body"/>
-    <rect width="200" height="26" class="entity-header"/>
-    <text x="100" y="18" class="entity-header-title">PARKING_LOGS</text>
-    <text x="10" y="44" class="attr-txt"><tspan class="pk">PK</tspan> log_id : BIGINT</text>
-    <text x="10" y="62" class="attr-txt"><tspan class="fk">FK</tspan> slot_id : INT</text>
-    <text x="10" y="80" class="attr-txt"><tspan class="fk">FK</tspan> user_id : INT</text>
-    <text x="10" y="98" class="attr-txt">   vehicle_reg : VARCHAR</text>
-    <text x="10" y="116" class="attr-txt">   entry_timestamp : DATETIME</text>
+  <rect x="30" y="780" width="750" height="650" class="zone-box"/>
+  <text x="45" y="802" class="zone-header">Module 2: University Bookstore & Uniforms</text>
+  <text x="45" y="816" class="zone-sub">Merchandise Categories, Stock Inventory, Orders & Itemized Lines</text>
+  <g transform="translate(55, 830)">
+    <rect width="200" height="66" class="entity-body"/>
+    <rect width="200" height="24" class="entity-header"/>
+    <text x="100.0" y="16" class="entity-title">Store_Categories</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">category_id</tspan></text>
+    <text x="22" y="54" class="attr-txt">category_name (UQ)</text>
   </g>
-
-  <!-- ========================================================================= -->
-  <!-- MODULE 5: GRIEVANCE REDRESSAL & SLA TICKETING -->
-  <!-- ========================================================================= -->
-
-  <!-- GRIEVANCES -->
-  <g transform="translate(730, 530)">
-    <rect width="230" height="160" class="entity-body"/>
-    <rect width="230" height="26" class="entity-header"/>
-    <text x="115" y="18" class="entity-header-title">GRIEVANCES</text>
-    <text x="10" y="44" class="attr-txt"><tspan class="pk">PK</tspan> ticket_id : INT</text>
-    <text x="10" y="62" class="attr-txt"><tspan class="fk">FK</tspan> student_id : INT</text>
-    <text x="10" y="80" class="attr-txt">   category : VARCHAR(50)</text>
-    <text x="10" y="98" class="attr-txt"><tspan class="fk">FK</tspan> room_id : INT</text>
-    <text x="10" y="116" class="attr-txt">   ticket_subject : VARCHAR</text>
-    <text x="10" y="134" class="attr-txt">   priority : VARCHAR(20)</text>
-    <text x="10" y="152" class="attr-txt">   status : VARCHAR(30)</text>
+  <g transform="translate(285, 830)">
+    <rect width="230" height="151" class="entity-body"/>
+    <rect width="230" height="24" class="entity-header"/>
+    <text x="115.0" y="16" class="entity-title">Store_Inventory</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">product_id</tspan></text>
+    <text x="8" y="54" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">category_id</tspan></text>
+    <text x="22" y="71" class="attr-txt">product_code (UQ)</text>
+    <text x="22" y="88" class="attr-txt">product_name</text>
+    <text x="22" y="105" class="attr-txt">unit_price</text>
+    <text x="22" y="122" class="attr-txt">stock_quantity</text>
+    <text x="22" y="139" class="attr-txt">reorder_level</text>
   </g>
-
-  <!-- GRIEVANCE AUDIT LOGS -->
-  <g transform="translate(1010, 530)">
-    <rect width="220" height="130" class="entity-body"/>
-    <rect width="220" height="26" class="entity-header"/>
-    <text x="110" y="18" class="entity-header-title">GRIEVANCE_AUDIT_LOGS</text>
-    <text x="10" y="44" class="attr-txt"><tspan class="pk">PK</tspan> log_id : BIGINT</text>
-    <text x="10" y="62" class="attr-txt"><tspan class="fk">FK</tspan> ticket_id : INT</text>
-    <text x="10" y="80" class="attr-txt"><tspan class="fk">FK</tspan> changed_by_user_id : INT</text>
-    <text x="10" y="98" class="attr-txt">   previous_status : VARCHAR</text>
-    <text x="10" y="116" class="attr-txt">   new_status : VARCHAR</text>
+  <g transform="translate(535, 830)">
+    <rect width="220" height="117" class="entity-body"/>
+    <rect width="220" height="24" class="entity-header"/>
+    <text x="110.0" y="16" class="entity-title">Store_Orders</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">store_order_id</tspan></text>
+    <text x="8" y="54" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">user_id</tspan></text>
+    <text x="22" y="71" class="attr-txt">order_date</text>
+    <text x="22" y="88" class="attr-txt">total_amount</text>
+    <text x="22" y="105" class="attr-txt">order_status</text>
   </g>
-
-  <!-- ========================================================================= -->
-  <!-- MODULE 6: CENTRALIZED LIBRARY OPAC -->
-  <!-- ========================================================================= -->
-
-  <!-- BOOK CATEGORIES -->
-  <g transform="translate(1300, 530)">
-    <rect width="180" height="80" class="entity-body"/>
-    <rect width="180" height="26" class="entity-header"/>
-    <text x="90" y="18" class="entity-header-title">BOOK_CATEGORIES</text>
-    <text x="10" y="44" class="attr-txt"><tspan class="pk">PK</tspan> category_id : INT</text>
-    <text x="10" y="62" class="attr-txt">   category_name : VARCHAR</text>
+  <g transform="translate(285, 1140)">
+    <rect width="230" height="134" class="entity-body"/>
+    <rect width="230" height="24" class="entity-header"/>
+    <text x="115.0" y="16" class="entity-title">Store_Order_Items</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">store_order_item_id</tspan></text>
+    <text x="8" y="54" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">store_order_id</tspan></text>
+    <text x="8" y="71" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">product_id</tspan></text>
+    <text x="22" y="88" class="attr-txt">quantity</text>
+    <text x="22" y="105" class="attr-txt">unit_price</text>
+    <text x="22" y="122" class="attr-txt">subtotal</text>
   </g>
-
-  <!-- LIBRARY BOOKS -->
-  <g transform="translate(1530, 530)">
-    <rect width="210" height="140" class="entity-body"/>
-    <rect width="210" height="26" class="entity-header"/>
-    <text x="105" y="18" class="entity-header-title">LIBRARY_BOOKS</text>
-    <text x="10" y="44" class="attr-txt"><tspan class="pk">PK</tspan> book_id : INT</text>
-    <text x="10" y="62" class="attr-txt">   isbn : VARCHAR(20)</text>
-    <text x="10" y="80" class="attr-txt">   title : VARCHAR(200)</text>
-    <text x="10" y="98" class="attr-txt">   author : VARCHAR(150)</text>
-    <text x="10" y="116" class="attr-txt"><tspan class="fk">FK</tspan> category_id : INT</text>
-    <text x="10" y="134" class="attr-txt">   available_copies : INT</text>
+  <rect x="810" y="780" width="750" height="650" class="zone-box"/>
+  <text x="825" y="802" class="zone-header">Module 3: Health & Medical Room</text>
+  <text x="825" y="816" class="zone-sub">Clinic Check-in Logs, Vitals, Emergency Triage & Prescriptions</text>
+  <g transform="translate(835, 830)">
+    <rect width="240" height="185" class="entity-body"/>
+    <rect width="240" height="24" class="entity-header"/>
+    <text x="120.0" y="16" class="entity-title">Medical_Visits</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">visit_id</tspan></text>
+    <text x="8" y="54" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">student_id</tspan></text>
+    <text x="8" y="71" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">attending_staff_id</tspan></text>
+    <text x="22" y="88" class="attr-txt">checkin_time</text>
+    <text x="22" y="105" class="attr-txt">symptoms_observed</text>
+    <text x="22" y="122" class="attr-txt">temperature_celsius</text>
+    <text x="22" y="139" class="attr-txt">blood_pressure</text>
+    <text x="22" y="156" class="attr-txt">is_emergency_flag</text>
+    <text x="22" y="173" class="attr-txt">disposition</text>
   </g>
-
-  <!-- LIBRARY CIRCULATION -->
-  <g transform="translate(1770, 530)">
-    <rect width="200" height="150" class="entity-body"/>
-    <rect width="200" height="26" class="entity-header"/>
-    <text x="100" y="18" class="entity-header-title">LIBRARY_CIRCULATION</text>
-    <text x="10" y="44" class="attr-txt"><tspan class="pk">PK</tspan> issue_id : INT</text>
-    <text x="10" y="62" class="attr-txt"><tspan class="fk">FK</tspan> book_id : INT</text>
-    <text x="10" y="80" class="attr-txt"><tspan class="fk">FK</tspan> user_id : INT</text>
-    <text x="10" y="98" class="attr-txt">   issued_date : DATE</text>
-    <text x="10" y="116" class="attr-txt">   due_date : DATE</text>
-    <text x="10" y="134" class="attr-txt">   circulation_status : VARCHAR</text>
+  <g transform="translate(1105, 830)">
+    <rect width="240" height="134" class="entity-body"/>
+    <rect width="240" height="24" class="entity-header"/>
+    <text x="120.0" y="16" class="entity-title">Medical_Prescriptions</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">prescription_id</tspan></text>
+    <text x="8" y="54" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">visit_id</tspan></text>
+    <text x="22" y="71" class="attr-txt">medicine_name</text>
+    <text x="22" y="88" class="attr-txt">dosage</text>
+    <text x="22" y="105" class="attr-txt">quantity_dispensed</text>
+    <text x="22" y="122" class="attr-txt">instructions</text>
   </g>
-
-  <!-- ========================================================================= -->
-  <!-- RELATIONSHIP CONNECTORS & CARDINALITIES -->
-  <!-- ========================================================================= -->
-
-  <!-- ROLES -> USERS (1:N) -->
-  <line x1="240" y1="185" x2="300" y2="185" class="conn"/>
-  <rect x="250" y="174" width="40" height="18" class="rel-box"/>
-  <text x="270" y="187" class="rel-txt">1 : N</text>
-
-  <!-- USERS -> STUDENTS (1:1) -->
-  <path d="M 370 290 L 370 315 L 275 315 L 275 340" class="conn"/>
-  <rect x="300" y="306" width="40" height="18" class="rel-box"/>
-  <text x="320" y="319" class="rel-txt">1 : 1</text>
-
-  <!-- USERS -> FACULTIES (1:1) -->
-  <path d="M 450 290 L 450 315 L 530 315 L 530 340" class="conn"/>
-  <rect x="470" y="306" width="40" height="18" class="rel-box"/>
-  <text x="490" y="319" class="rel-txt">1 : 1</text>
-
-  <!-- SCHOOLS -> DEPARTMENTS (1:N) -->
-  <line x1="770" y1="220" x2="770" y2="270" class="conn"/>
-  <rect x="750" y="235" width="40" height="18" class="rel-box"/>
-  <text x="770" y="248" class="rel-txt">1 : N</text>
-
-  <!-- DEPARTMENTS -> STUDENTS (1:N) -->
-  <path d="M 680 320 L 660 320 L 660 390 L 370 390" class="conn"/>
-  <rect x="500" y="381" width="40" height="18" class="rel-box"/>
-  <text x="520" y="394" class="rel-txt">1 : N</text>
-
-  <!-- DEPARTMENTS -> FACULTIES (1:N) -->
-  <line x1="680" y1="355" x2="640" y2="355" class="conn"/>
-  <rect x="645" y="346" width="30" height="18" class="rel-box"/>
-  <text x="660" y="359" class="rel-txt">1:N</text>
-
-  <!-- CAMPUS_BLOCKS -> CAMPUS_ROOMS (1:N) -->
-  <line x1="1035" y1="250" x2="1035" y2="300" class="conn"/>
-  <rect x="1015" y="265" width="40" height="18" class="rel-box"/>
-  <text x="1035" y="278" class="rel-txt">1 : N</text>
-
-  <!-- FACULTIES -> FACULTY_TIMETABLES (1:N) -->
-  <line x1="535" y1="480" x2="535" y2="530" class="conn"/>
-  <rect x="515" y="495" width="40" height="18" class="rel-box"/>
-  <text x="535" y="508" class="rel-txt">1 : N</text>
-
-  <!-- CAMPUS_ROOMS -> FACULTY_TIMETABLES (1:N) -->
-  <path d="M 940 370 L 650 370 L 650 540" class="conn"/>
-  <rect x="760" y="361" width="40" height="18" class="rel-box"/>
-  <text x="780" y="374" class="rel-txt">1 : N</text>
-
-  <!-- CAMPUS_BLOCKS -> CAFETERIA_VENDORS (1:N) -->
-  <line x1="1130" y1="185" x2="1220" y2="185" class="conn"/>
-  <rect x="1160" y="176" width="40" height="18" class="rel-box"/>
-  <text x="1180" y="189" class="rel-txt">1 : N</text>
-
-  <!-- CAFETERIA_VENDORS -> CAFETERIA_ITEMS (1:N) -->
-  <line x1="1325" y1="250" x2="1325" y2="300" class="conn"/>
-  <rect x="1305" y="265" width="40" height="18" class="rel-box"/>
-  <text x="1325" y="278" class="rel-txt">1 : N</text>
-
-  <!-- CAFETERIA_ORDERS -> CAFETERIA_ORDER_ITEMS (1:N) -->
-  <line x1="1585" y1="290" x2="1585" y2="340" class="conn"/>
-  <rect x="1565" y="305" width="40" height="18" class="rel-box"/>
-  <text x="1585" y="318" class="rel-txt">1 : N</text>
-
-  <!-- CAFETERIA_ITEMS -> CAFETERIA_ORDER_ITEMS (1:N) -->
-  <line x1="1430" y1="380" x2="1480" y2="380" class="conn"/>
-  <rect x="1440" y="371" width="30" height="18" class="rel-box"/>
-  <text x="1455" y="384" class="rel-txt">1:N</text>
-
-  <!-- CAMPUS_BLOCKS -> PARKING_SLOTS (1:N) -->
-  <path d="M 1130 160 L 1740 160" class="conn"/>
-  <rect x="1440" y="151" width="40" height="18" class="rel-box"/>
-  <text x="1460" y="164" class="rel-txt">1 : N</text>
-
-  <!-- PARKING_SLOTS -> PARKING_LOGS (1:N) -->
-  <line x1="1840" y1="260" x2="1840" y2="310" class="conn"/>
-  <rect x="1820" y="275" width="40" height="18" class="rel-box"/>
-  <text x="1840" y="288" class="rel-txt">1 : N</text>
-
-  <!-- GRIEVANCES -> GRIEVANCE_AUDIT_LOGS (1:N) -->
-  <line x1="960" y1="595" x2="1010" y2="595" class="conn"/>
-  <rect x="970" y="586" width="30" height="18" class="rel-box"/>
-  <text x="985" y="599" class="rel-txt">1:N</text>
-
-  <!-- BOOK_CATEGORIES -> LIBRARY_BOOKS (1:N) -->
-  <line x1="1480" y1="570" x2="1530" y2="570" class="conn"/>
-  <rect x="1490" y="561" width="30" height="18" class="rel-box"/>
-  <text x="1505" y="574" class="rel-txt">1:N</text>
-
-  <!-- LIBRARY_BOOKS -> LIBRARY_CIRCULATION (1:N) -->
-  <line x1="1740" y1="585" x2="1770" y2="585" class="conn"/>
-  <rect x="1745" y="576" width="24" height="18" class="rel-box"/>
-  <text x="1757" y="589" class="rel-txt">1:N</text>
-
-  <!-- LEGEND BOX -->
-  <g transform="translate(60, 720)">
-    <rect width="1880" height="90" fill="#F8FAFC" stroke="#CBD5E1" rx="6"/>
-    <text x="20" y="25" style="font-family: Arial; font-weight: bold; font-size: 13px; fill: #1F497D;">ER DIAGRAM CONSTRAINTS &amp; NOTATION KEY:</text>
-    <circle cx="35" cy="55" r="6" fill="#1F497D"/>
-    <text x="50" y="59" style="font-family: Arial; font-size: 12px; fill: #1E293B;">Strong Entity Set (Rectangle)</text>
-    <rect x="250" y="47" width="16" height="16" fill="#FFFBEB" stroke="#D4AF37" rx="3"/>
-    <text x="275" y="59" style="font-family: Arial; font-size: 12px; fill: #1E293B;">Cardinality Relationship (1:1, 1:N, M:N)</text>
-    <text x="580" y="59" class="attr-txt"><tspan class="pk" style="font-size: 13px;">PK</tspan> Primary Key (Unique &amp; Non-Null)</text>
-    <text x="850" y="59" class="attr-txt"><tspan class="fk" style="font-size: 13px;">FK</tspan> Foreign Key (Referential Integrity)</text>
-    <line x1="1120" y1="55" x2="1160" y2="55" stroke="#64748B" stroke-width="2"/>
-    <text x="1170" y="59" style="font-family: Arial; font-size: 12px; fill: #1E293B;">Total / Partial Participation Line</text>
-    <text x="20" y="80" style="font-family: Arial; font-size: 11px; fill: #64748B;">* All 21 core entities have been mapped strictly adhering to BCNF normal forms without functional redundancy.</text>
+  <rect x="1590" y="780" width="760" height="650" class="zone-box"/>
+  <text x="1605" y="802" class="zone-header">Module 4: Campus Lost & Found Vault</text>
+  <text x="1605" y="816" class="zone-sub">Recovered Property Catalog, Ownership Claims & Handover Verification</text>
+  <g transform="translate(1615, 830)">
+    <rect width="240" height="168" class="entity-body"/>
+    <rect width="240" height="24" class="entity-header"/>
+    <text x="120.0" y="16" class="entity-title">Lost_Found_Items</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">item_id</tspan></text>
+    <text x="8" y="54" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">reported_by_user_id</tspan></text>
+    <text x="22" y="71" class="attr-txt">item_title</text>
+    <text x="22" y="88" class="attr-txt">category</text>
+    <text x="22" y="105" class="attr-txt">photo_url</text>
+    <text x="8" y="122" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">found_at_room_id</tspan></text>
+    <text x="22" y="139" class="attr-txt">date_found</text>
+    <text x="22" y="156" class="attr-txt">status</text>
   </g>
+  <g transform="translate(1885, 830)">
+    <rect width="240" height="151" class="entity-body"/>
+    <rect width="240" height="24" class="entity-header"/>
+    <text x="120.0" y="16" class="entity-title">Lost_Found_Claims</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">claim_id</tspan></text>
+    <text x="8" y="54" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">item_id</tspan></text>
+    <text x="8" y="71" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">claimed_by_user_id</tspan></text>
+    <text x="22" y="88" class="attr-txt">claim_description</text>
+    <text x="22" y="105" class="attr-txt">claim_submitted_date</text>
+    <text x="22" y="122" class="attr-txt">verification_status</text>
+    <text x="8" y="139" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">handed_over_by_security_id</tspan></text>
+  </g>
+  <rect x="2380" y="780" width="790" height="650" class="zone-box"/>
+  <text x="2395" y="802" class="zone-header">Module 5: Centralized Library OPAC</text>
+  <text x="2395" y="816" class="zone-sub">Discipline Taxonomy, Book Titles, Multi-Copy Tracking & Circulation Lending</text>
+  <g transform="translate(2405, 830)">
+    <rect width="190" height="66" class="entity-body"/>
+    <rect width="190" height="24" class="entity-header"/>
+    <text x="95.0" y="16" class="entity-title">Book_Categories</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">category_id</tspan></text>
+    <text x="22" y="54" class="attr-txt">category_name (UQ)</text>
+  </g>
+  <g transform="translate(2625, 830)">
+    <rect width="230" height="168" class="entity-body"/>
+    <rect width="230" height="24" class="entity-header"/>
+    <text x="115.0" y="16" class="entity-title">Library_Books</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">book_id</tspan></text>
+    <text x="22" y="54" class="attr-txt">isbn (UQ)</text>
+    <text x="22" y="71" class="attr-txt">title</text>
+    <text x="22" y="88" class="attr-txt">author</text>
+    <text x="8" y="105" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">category_id</tspan></text>
+    <text x="22" y="122" class="attr-txt">total_copies</text>
+    <text x="22" y="139" class="attr-txt">available_copies</text>
+    <text x="22" y="156" class="attr-txt">shelf_location</text>
+  </g>
+  <g transform="translate(2885, 830)">
+    <rect width="240" height="168" class="entity-body"/>
+    <rect width="240" height="24" class="entity-header"/>
+    <text x="120.0" y="16" class="entity-title">Library_Circulation</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">issue_id</tspan></text>
+    <text x="8" y="54" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">book_id</tspan></text>
+    <text x="8" y="71" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">user_id</tspan></text>
+    <text x="22" y="88" class="attr-txt">issued_date</text>
+    <text x="22" y="105" class="attr-txt">due_date</text>
+    <text x="22" y="122" class="attr-txt">returned_date</text>
+    <text x="22" y="139" class="attr-txt">fine_amount</text>
+    <text x="22" y="156" class="attr-txt">circulation_status</text>
+  </g>
+  <rect x="30" y="1460" width="700" height="520" class="zone-box"/>
+  <text x="45" y="1482" class="zone-header">Module 6: Smart Parking Telemetry</text>
+  <text x="45" y="1496" class="zone-sub">Bays, 2W/4W/EV Slots & Security Logs</text>
+  <g transform="translate(55, 1510)">
+    <rect width="220" height="134" class="entity-body"/>
+    <rect width="220" height="24" class="entity-header"/>
+    <text x="110.0" y="16" class="entity-title">Parking_Slots</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">slot_id</tspan></text>
+    <text x="8" y="54" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">block_id</tspan></text>
+    <text x="22" y="71" class="attr-txt">slot_code (UQ)</text>
+    <text x="22" y="88" class="attr-txt">vehicle_type</text>
+    <text x="22" y="105" class="attr-txt">is_ev_charging</text>
+    <text x="22" y="122" class="attr-txt">is_occupied</text>
+  </g>
+  <g transform="translate(305, 1510)">
+    <rect width="230" height="134" class="entity-body"/>
+    <rect width="230" height="24" class="entity-header"/>
+    <text x="115.0" y="16" class="entity-title">Parking_Logs</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">log_id</tspan></text>
+    <text x="8" y="54" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">slot_id</tspan></text>
+    <text x="8" y="71" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">user_id</tspan></text>
+    <text x="22" y="88" class="attr-txt">vehicle_reg_number</text>
+    <text x="22" y="105" class="attr-txt">entry_timestamp</text>
+    <text x="22" y="122" class="attr-txt">exit_timestamp</text>
+  </g>
+  <rect x="760" y="1460" width="1100" height="520" class="zone-box"/>
+  <text x="775" y="1482" class="zone-header">Modules 7 & 8: Student Clubs & Campus Events</text>
+  <text x="775" y="1496" class="zone-sub">Academic Clubs, Memberships, Event Calendars & QR Passes</text>
+  <g transform="translate(785, 1510)">
+    <rect width="230" height="134" class="entity-body"/>
+    <rect width="230" height="24" class="entity-header"/>
+    <text x="115.0" y="16" class="entity-title">Student_Clubs</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">club_id</tspan></text>
+    <text x="8" y="54" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">school_id</tspan></text>
+    <text x="22" y="71" class="attr-txt">club_name (UQ)</text>
+    <text x="22" y="88" class="attr-txt">club_tagline</text>
+    <text x="8" y="105" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">faculty_coordinator_id</tspan></text>
+    <text x="22" y="122" class="attr-txt">founded_year</text>
+  </g>
+  <g transform="translate(1045, 1510)">
+    <rect width="220" height="117" class="entity-body"/>
+    <rect width="220" height="24" class="entity-header"/>
+    <text x="110.0" y="16" class="entity-title">Club_Memberships</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">membership_id</tspan></text>
+    <text x="8" y="54" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">club_id</tspan></text>
+    <text x="8" y="71" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">student_id</tspan></text>
+    <text x="22" y="88" class="attr-txt">joined_date</text>
+    <text x="22" y="105" class="attr-txt">member_role</text>
+  </g>
+  <g transform="translate(1295, 1510)">
+    <rect width="240" height="134" class="entity-body"/>
+    <rect width="240" height="24" class="entity-header"/>
+    <text x="120.0" y="16" class="entity-title">Campus_Events</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">event_id</tspan></text>
+    <text x="8" y="54" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">club_id</tspan></text>
+    <text x="22" y="71" class="attr-txt">event_title</text>
+    <text x="22" y="88" class="attr-txt">event_type</text>
+    <text x="8" y="105" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">venue_room_id</tspan></text>
+    <text x="22" y="122" class="attr-txt">max_registrations</text>
+  </g>
+  <g transform="translate(1565, 1510)">
+    <rect width="240" height="134" class="entity-body"/>
+    <rect width="240" height="24" class="entity-header"/>
+    <text x="120.0" y="16" class="entity-title">Event_Registrations</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">registration_id</tspan></text>
+    <text x="8" y="54" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">event_id</tspan></text>
+    <text x="8" y="71" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">user_id</tspan></text>
+    <text x="22" y="88" class="attr-txt">registration_timestamp</text>
+    <text x="22" y="105" class="attr-txt">qr_ticket_hash (UQ)</text>
+    <text x="22" y="122" class="attr-txt">has_attended</text>
+  </g>
+  <rect x="1890" y="1460" width="1280" height="520" class="zone-box"/>
+  <text x="1905" y="1482" class="zone-header">Modules 10 & 11: Grievance Portal & Study Resources</text>
+  <text x="1905" y="1496" class="zone-sub">Facility Tickets, SLA Audit Trail & Study Resources Repository</text>
+  <g transform="translate(1915, 1510)">
+    <rect width="240" height="151" class="entity-body"/>
+    <rect width="240" height="24" class="entity-header"/>
+    <text x="120.0" y="16" class="entity-title">Grievances</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">ticket_id</tspan></text>
+    <text x="8" y="54" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">student_id</tspan></text>
+    <text x="22" y="71" class="attr-txt">category</text>
+    <text x="8" y="88" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">room_id</tspan></text>
+    <text x="22" y="105" class="attr-txt">ticket_subject</text>
+    <text x="22" y="122" class="attr-txt">priority</text>
+    <text x="22" y="139" class="attr-txt">status</text>
+  </g>
+  <g transform="translate(2185, 1510)">
+    <rect width="240" height="134" class="entity-body"/>
+    <rect width="240" height="24" class="entity-header"/>
+    <text x="120.0" y="16" class="entity-title">Grievance_Audit_Logs</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">log_id</tspan></text>
+    <text x="8" y="54" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">ticket_id</tspan></text>
+    <text x="8" y="71" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">changed_by_user_id</tspan></text>
+    <text x="22" y="88" class="attr-txt">previous_status</text>
+    <text x="22" y="105" class="attr-txt">new_status</text>
+    <text x="22" y="122" class="attr-txt">action_timestamp</text>
+  </g>
+  <g transform="translate(2455, 1510)">
+    <rect width="250" height="151" class="entity-body"/>
+    <rect width="250" height="24" class="entity-header"/>
+    <text x="125.0" y="16" class="entity-title">Academic_Resources</text>
+    <text x="8" y="37" class="attr-txt"><tspan class="badge-pk">PK </tspan><tspan class="pk-txt">resource_id</tspan></text>
+    <text x="8" y="54" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">dept_id</tspan></text>
+    <text x="8" y="71" class="attr-txt"><tspan class="badge-fk">FK </tspan><tspan class="fk-txt">uploaded_by_faculty_id</tspan></text>
+    <text x="22" y="88" class="attr-txt">resource_type</text>
+    <text x="22" y="105" class="attr-txt">course_code</text>
+    <text x="22" y="122" class="attr-txt">document_title</text>
+    <text x="22" y="139" class="attr-txt">download_count</text>
+  </g>
+  <line x1="275" y1="180" x2="305" y2="180" class="conn"/>
+  <rect x="276" y="164" width="28" height="16" class="rel-box"/>
+  <text x="290" y="176" class="rel-txt">1:N</text>
+  <line x1="795" y1="180" x2="825" y2="180" class="conn"/>
+  <rect x="796" y="164" width="28" height="16" class="rel-box"/>
+  <text x="810" y="176" class="rel-txt">1:N</text>
+  <line x1="380" y1="320" x2="270" y2="440" class="conn"/>
+  <rect x="311" y="372" width="28" height="16" class="rel-box"/>
+  <text x="325" y="384" class="rel-txt">1:1</text>
+  <line x1="480" y1="320" x2="560" y2="440" class="conn"/>
+  <rect x="506" y="372" width="28" height="16" class="rel-box"/>
+  <text x="520" y="384" class="rel-txt">1:1</text>
+  <line x1="1345" y1="180" x2="1375" y2="180" class="conn"/>
+  <rect x="1346" y="164" width="28" height="16" class="rel-box"/>
+  <text x="1360" y="176" class="rel-txt">1:N</text>
+  <line x1="1605" y1="180" x2="1635" y2="180" class="conn"/>
+  <rect x="1606" y="164" width="28" height="16" class="rel-box"/>
+  <text x="1620" y="176" class="rel-txt">1:N</text>
+  <line x1="2435" y1="180" x2="2465" y2="180" class="conn"/>
+  <rect x="2436" y="164" width="28" height="16" class="rel-box"/>
+  <text x="2450" y="176" class="rel-txt">1:N</text>
+  <line x1="2695" y1="180" x2="2725" y2="180" class="conn"/>
+  <rect x="2696" y="164" width="28" height="16" class="rel-box"/>
+  <text x="2710" y="176" class="rel-txt">1:N</text>
+  <line x1="255" y1="860" x2="285" y2="860" class="conn"/>
+  <rect x="256" y="844" width="28" height="16" class="rel-box"/>
+  <text x="270" y="856" class="rel-txt">1:N</text>
+  <line x1="1075" y1="860" x2="1105" y2="860" class="conn"/>
+  <rect x="1076" y="844" width="28" height="16" class="rel-box"/>
+  <text x="1090" y="856" class="rel-txt">1:N</text>
+  <line x1="1855" y1="860" x2="1885" y2="860" class="conn"/>
+  <rect x="1856" y="844" width="28" height="16" class="rel-box"/>
+  <text x="1870" y="856" class="rel-txt">1:N</text>
+  <line x1="2595" y1="860" x2="2625" y2="860" class="conn"/>
+  <rect x="2596" y="844" width="28" height="16" class="rel-box"/>
+  <text x="2610" y="856" class="rel-txt">1:N</text>
+  <line x1="2855" y1="860" x2="2885" y2="860" class="conn"/>
+  <rect x="2856" y="844" width="28" height="16" class="rel-box"/>
+  <text x="2870" y="856" class="rel-txt">1:N</text>
+  <line x1="275" y1="1540" x2="305" y2="1540" class="conn"/>
+  <rect x="276" y="1524" width="28" height="16" class="rel-box"/>
+  <text x="290" y="1536" class="rel-txt">1:N</text>
+  <line x1="1015" y1="1540" x2="1045" y2="1540" class="conn"/>
+  <rect x="1016" y="1524" width="28" height="16" class="rel-box"/>
+  <text x="1030" y="1536" class="rel-txt">1:N</text>
+  <line x1="1265" y1="1540" x2="1295" y2="1540" class="conn"/>
+  <rect x="1266" y="1524" width="28" height="16" class="rel-box"/>
+  <text x="1280" y="1536" class="rel-txt">1:N</text>
+  <line x1="1535" y1="1540" x2="1565" y2="1540" class="conn"/>
+  <rect x="1536" y="1524" width="28" height="16" class="rel-box"/>
+  <text x="1550" y="1536" class="rel-txt">1:N</text>
+  <line x1="2155" y1="1540" x2="2185" y2="1540" class="conn"/>
+  <rect x="2156" y="1524" width="28" height="16" class="rel-box"/>
+  <text x="2170" y="1536" class="rel-txt">1:N</text>
 
+  <g transform="translate(30, 2010)">
+    <rect width="3140" height="150" fill="#FFFFFF" stroke="#666666" rx="4"/>
+    <text x="25" y="30" style="font-family: 'Times New Roman', serif; font-size: 15px; font-weight: bold; fill: #000000;">ER DIAGRAM KEY &amp; ARCHITECTURAL INTEGRITY CONSTRAINTS:</text>
+    <text x="25" y="58" class="attr-txt"><tspan class="badge-pk">PK</tspan> Primary Key (Unique &amp; Non-Null)</text>
+    <text x="320" y="58" class="attr-txt"><tspan class="badge-fk">FK</tspan> Foreign Key (Referential Integrity)</text>
+    <text x="640" y="58" class="attr-txt"><tspan class="badge-pkfk">PK,FK</tspan> Entity Subtype Identifier</text>
+    <text x="960" y="58" style="font-family: 'Times New Roman', serif; font-size: 13px; fill: #000000;"><strong>1:1, 1:N, M:N</strong> Cardinality Ratios (M:N resolved via associative tables)</text>
+    <text x="25" y="90" style="font-family: 'Times New Roman', serif; font-size: 12.5px; fill: #333333;"><strong>BCNF Compliance:</strong> All 34 entities satisfy Boyce-Codd Normal Form with every determinant functioning as a valid Candidate Key. Zero redundant storage.</text>
+    <text x="25" y="115" style="font-family: 'Times New Roman', serif; font-size: 12px; font-weight: bold; fill: #000000;">Department of Computer Science &bull; CHRIST (Deemed to be University), Bangalore Yeshwanthpur Campus &bull; DBMS Project (BCA381-4)</text>
+  </g>
 </svg>
