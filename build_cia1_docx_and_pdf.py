@@ -32,17 +32,18 @@ def build_cia1_documents():
         shutil.rmtree(temp_dir)
 
     # Step 1: Ensure ER diagram images are generated
-    print("=== Step 1: Ensure Figma ER Diagram Images (3 Parts) are Generated ===")
-    erd_script = os.path.join(workspace_dir, "generate_erd_3parts.py")
+    print("=== Step 1: Ensure Figma ER Diagram Images (4 Parts) are Generated ===")
+    erd_script = os.path.join(workspace_dir, "generate_erd_4parts.py")
     if os.path.exists(erd_script):
         subprocess.run(["python3", erd_script], check=True)
     erd1 = os.path.join(workspace_dir, "images", "erd_part1.png")
     erd2 = os.path.join(workspace_dir, "images", "erd_part2.png")
     erd3 = os.path.join(workspace_dir, "images", "erd_part3.png")
-    for p_path in [erd1, erd2, erd3]:
+    erd4 = os.path.join(workspace_dir, "images", "erd_part4.png")
+    for p_path in [erd1, erd2, erd3, erd4]:
         if not os.path.exists(p_path):
             raise FileNotFoundError(f"Missing {p_path}")
-    print("3-part ER diagram images verified.")
+    print("4-part ER diagram images verified.")
 
     # Step 2: Unpack base template from synopsis docx
     print("=== Step 2: Unpack Base Template from Synopsis DOCX ===")
@@ -56,6 +57,7 @@ def build_cia1_documents():
     shutil.copy2(erd1, os.path.join(media_dir, "erd_part1.png"))
     shutil.copy2(erd2, os.path.join(media_dir, "erd_part2.png"))
     shutil.copy2(erd3, os.path.join(media_dir, "erd_part3.png"))
+    shutil.copy2(erd4, os.path.join(media_dir, "erd_part4.png"))
 
     rels_file = os.path.join(temp_dir, "word", "_rels", "document.xml.rels")
     with open(rels_file, "r", encoding="utf-8") as f:
@@ -64,7 +66,8 @@ def build_cia1_documents():
     erd_rel_tags = (
         '  <Relationship Id="rId13" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/erd_part1.png"/>\n'
         '  <Relationship Id="rId14" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/erd_part2.png"/>\n'
-        '  <Relationship Id="rId15" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/erd_part3.png"/>'
+        '  <Relationship Id="rId15" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/erd_part3.png"/>\n'
+        '  <Relationship Id="rId16" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/erd_part4.png"/>'
     )
     if 'Target="media/erd_part1.png"' not in rels_xml:
         rels_xml = rels_xml.replace('</Relationships>', f'{erd_rel_tags}\n</Relationships>')
@@ -263,27 +266,34 @@ def build_cia1_documents():
     body.append(p_runs([("Cardinality & Participation: ", True, False, 22), ("1:1, 1:N, and M:N relationships; total participation enforced on child entities (Rooms in Blocks, Order Items in Orders).", False, False, 22)], bullet=True))
 
     # =========================================================================
-    # DEDICATED 3-PAGE HIGH-RESOLUTION ER DIAGRAM (SHEETS 1, 2, AND 3)
+    # DEDICATED 4-PAGE HIGH-RESOLUTION ER DIAGRAM (SHEETS 1, 2, 3, AND 4)
     # Designed specifically for clear, readable physical hardcopy submissions
+    # Each sheet features a prominent central UniChrist engine hub with direct edge-to-edge connecting arrows
     # =========================================================================
-    # Sheet 1: Core Academic & Spatial Hierarchy
+    # Sheet 1: Core Academic Governance, Multi-Role RBAC & Grievances
     body.append(page_break())
-    body.append(p("3.3 Relational ER Diagram — Sheet 1: Core Academic & Spatial Hierarchy", bold=True, sz=24, align="center", before=10, after=5))
-    body.append(p("Figure 1A: Entities, Attributes & Cardinality for Modules 0, 9, 12, 10 & 11", italic=True, sz=18, align="center", before=0, after=5))
+    body.append(p("3.3 Relational ER Diagram — Sheet 1: Core Demographics & Academic Structure", bold=True, sz=24, align="center", before=10, after=5))
+    body.append(p("Figure 1A: Entities, Attributes & Cardinality for Modules 0, 9, 11 & 12 (Central Authentication Hub)", italic=True, sz=18, align="center", before=0, after=5))
     body.append(p("Live Interactive FigJam Board: https://www.figma.com/board/13lZxvTOg5Z2wCOcCwvhm5", italic=False, sz=16, align="center", before=0, after=10))
     body.append(image_drawing("rId13", 5950000, 7350000, ""))
 
-    # Sheet 2: Campus Commercial & Welfare Services
+    # Sheet 2: Campus Spatial Directory, Faculty Timetables & Smart Parking
     body.append(page_break())
-    body.append(p("3.4 Relational ER Diagram — Sheet 2: Campus Commercial & Welfare Services", bold=True, sz=24, align="center", before=10, after=5))
-    body.append(p("Figure 1B: Entities, Attributes & Cardinality for Modules 1, 2, 3 & 4 (Cafeteria, Store, Clinic & Lost Vault)", italic=True, sz=18, align="center", before=0, after=10))
+    body.append(p("3.4 Relational ER Diagram — Sheet 2: Spatial Directory & Automated Timetables", bold=True, sz=24, align="center", before=10, after=5))
+    body.append(p("Figure 1B: Entities, Attributes & Cardinality for Modules 6 & 10 (Central Spatial & Scheduling Engine)", italic=True, sz=18, align="center", before=0, after=10))
     body.append(image_drawing("rId14", 5950000, 7450000, ""))
 
-    # Sheet 3: Campus Logistics, Library OPAC & Student Life
+    # Sheet 3: Campus Commercial Ecosystem (Smart Cafeteria & Campus Store)
     body.append(page_break())
-    body.append(p("3.5 Relational ER Diagram — Sheet 3: Campus Logistics, Library & Student Life", bold=True, sz=24, align="center", before=10, after=5))
-    body.append(p("Figure 1C: Entities, Attributes & Cardinality for Modules 5, 6, 7 & 8 with Notation Legend", italic=True, sz=18, align="center", before=0, after=10))
+    body.append(p("3.5 Relational ER Diagram — Sheet 3: Commercial Services & Order Junctions", bold=True, sz=24, align="center", before=10, after=5))
+    body.append(p("Figure 1C: Entities, Attributes & Cardinality for Modules 1 & 2 (Central Commercial Gateway & FIFO Queue)", italic=True, sz=18, align="center", before=0, after=10))
     body.append(image_drawing("rId15", 5950000, 7450000, ""))
+
+    # Sheet 4: Student Life, Campus Welfare & Architecture Legend
+    body.append(page_break())
+    body.append(p("3.6 Relational ER Diagram — Sheet 4: Campus Welfare, Societies & OPAC", bold=True, sz=24, align="center", before=10, after=5))
+    body.append(p("Figure 1D: Entities, Attributes & Cardinality for Modules 3, 4, 5, 7 & 8 with Blueprint Notation Legend", italic=True, sz=18, align="center", before=0, after=10))
+    body.append(image_drawing("rId16", 5950000, 7450000, ""))
     body.append(page_break())
 
     # =========================================================================
