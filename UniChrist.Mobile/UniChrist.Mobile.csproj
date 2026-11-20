@@ -13,6 +13,11 @@
 		<EnableDefaultCssItems>false</EnableDefaultCssItems>
 		<Nullable>enable</Nullable>
 
+		<!-- Disable EOL workload errors on CI -->
+		<CheckEolWorkloads>false</CheckEolWorkloads>
+		<CheckEolTargetFramework>false</CheckEolTargetFramework>
+		<NoWarn>$(NoWarn);NETSDK1202;NETSDK1138</NoWarn>
+
 		<!-- Display name and identifiers -->
 		<ApplicationTitle>UniChrist Portal</ApplicationTitle>
 		<ApplicationId>com.unichrist.portal</ApplicationId>

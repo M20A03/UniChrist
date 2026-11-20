@@ -8,6 +8,7 @@ on:
     paths:
       - 'UniChrist.Mobile/**'
       - '.github/workflows/build-android-apk.yml'
+      - 'global.json'
 
 jobs:
   build-apk:
@@ -29,9 +30,14 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
+      - name: Verify .NET SDK Version
+        run: |
+          dotnet --version
+          dotnet --list-sdks
+
       - name: Install .NET MAUI Android Workload
         run: |
-          dotnet workload install maui-android --source https://api.nuget.org/v3/index.json
+          dotnet workload install maui-android --skip-manifest-update --source https://api.nuget.org/v3/index.json
 
       - name: Generate Build Keystore
         run: |
@@ -47,19 +53,20 @@ jobs:
 
       - name: Restore NuGet Dependencies
         run: |
-          dotnet restore UniChrist.Mobile/UniChrist.Mobile.csproj
+          dotnet restore UniChrist.Mobile/UniChrist.Mobile.csproj -p:CheckEolWorkloads=false -p:CheckEolTargetFramework=false
 
       - name: Publish Android APK (Release)
         run: |
           dotnet publish UniChrist.Mobile/UniChrist.Mobile.csproj \
             -f net9.0-android \
             -c Release \
+            -p:CheckEolWorkloads=false \
+            -p:CheckEolTargetFramework=false \
             -p:AndroidKeyStore=true \
             -p:AndroidSigningKeyStore=../unichrist_ci.keystore \
             -p:AndroidSigningKeyAlias=unichrist \
             -p:AndroidSigningKeyPass="UniChristPass2026!" \
-            -p:AndroidSigningStorePass="UniChristPass2026!" \
-            --no-restore
+            -p:AndroidSigningStorePass="UniChristPass2026!"
 
       - name: Locate and Prepare Output APK
         run: |
