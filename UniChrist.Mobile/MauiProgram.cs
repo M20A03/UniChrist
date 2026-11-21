@@ -15,6 +15,16 @@ public static class MauiProgram
         builder.Services.AddMauiBlazorWebView();
         builder.Services.AddBlazorWebViewDeveloperTools();
 
+        builder.ConfigureMauiHandlers(handlers =>
+        {
+#if ANDROID
+            Microsoft.Maui.Handlers.WebViewHandler.Mapper.AppendToMapping("CustomWebViewBackground", (handler, view) =>
+            {
+                handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.ParseColor("#080C14"));
+            });
+#endif
+        });
+
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
