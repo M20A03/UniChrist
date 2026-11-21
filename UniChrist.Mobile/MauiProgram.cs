@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using UniChrist.Mobile.Services;
 
 #if ANDROID
-using Android.Graphics;
 using Microsoft.AspNetCore.Components.WebView.Maui;
 #endif
 
@@ -33,7 +32,7 @@ public static class MauiProgram
             {
                 if (handler.PlatformView != null)
                 {
-                    handler.PlatformView.SetBackgroundColor(Color.ParseColor("#080C14"));
+                    handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.ParseColor("#080C14"));
                     
                     // Enable remote webview debugging unconditionally
                     Android.Webkit.WebView.SetWebContentsDebuggingEnabled(true);
