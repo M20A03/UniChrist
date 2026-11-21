@@ -9,6 +9,7 @@
                  android:roundIcon="@mipmap/appicon_round"
                  android:supportsRtl="true"
                  android:label="UniChrist Portal"
+                 android:usesCleartextTraffic="true"
                  android:hardwareAccelerated="true">
     </application>
 
