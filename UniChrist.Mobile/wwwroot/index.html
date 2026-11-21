@@ -1,32 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="background-color: #080C14; height: 100%;">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: gap:;" />
     <title>UniChrist Portal</title>
     <base href="/" />
+    
+    <!-- DOMAIN C: EARLY JAVASCRIPT EXCEPTION TRAP -->
+    <script>
+        window.onerror = function (msg, url, lineNo, columnNo, error) {
+            console.error('[UniChrist JS Error]', msg, 'at', url, lineNo + ':' + columnNo, error);
+            var errDiv = document.getElementById('debug-error-panel');
+            if (errDiv) {
+                errDiv.style.display = 'block';
+                errDiv.innerText = '[JS Error] ' + msg + ' (' + lineNo + ':' + columnNo + ')';
+            }
+            return false;
+        };
+        window.onunhandledrejection = function (event) {
+            console.error('[UniChrist Unhandled Rejection]', event.reason);
+        };
+    </script>
+
     <link rel="stylesheet" href="css/mobile-editorial.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 </head>
-<body style="background-color: #080C14; color: #F0F4F8; margin: 0; padding: 0;">
+<body style="background-color: #080C14; color: #F0F4F8; margin: 0; padding: 0; min-height: 100vh;">
+
+    <!-- Debug error panel for immediate on-device diagnosis if JS breaks -->
+    <div id="debug-error-panel" style="display:none; position:fixed; top:0; left:0; right:0; background:#EF4444; color:#fff; padding:12px; font-size:12px; font-family:monospace; z-index:99999;"></div>
+
+    <!-- Blazor Root Component Target with high-contrast immediate visual indicator -->
     <div id="app" style="background-color: #080C14; min-height: 100vh;">
-        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; font-family:sans-serif; color:#D4AF37;">
-            <div style="width:40px; height:40px; border:3px solid #1F2C4A; border-top:3px solid #D4AF37; border-radius:50%; animation:spin 1s linear infinite;"></div>
-            <p style="margin-top:16px; font-size:13px; font-weight:600; letter-spacing:2px; color:#94A3B8;">UNICHRIST PORTAL</p>
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; font-family:-apple-system, BlinkMacSystemFont, sans-serif; color:#D4AF37;">
+            <div style="width:48px; height:48px; border:4px solid #1F2C4A; border-top:4px solid #D4AF37; border-radius:50%; animation:spin 1s linear infinite;"></div>
+            <p style="margin-top:18px; font-size:14px; font-weight:700; letter-spacing:2px; color:#D4AF37;">UNICHRIST PORTAL</p>
+            <span style="font-size:11px; color:#64748B; margin-top:4px;">Connecting Campus Engine...</span>
         </div>
         <style>
             @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         </style>
     </div>
 
-    <div id="blazor-error-ui" style="display:none; position:fixed; bottom:0; left:0; right:0; background:#EF4444; color:#fff; padding:10px; z-index:9999;">
-        An unhandled error has occurred.
-        <a href="" style="color:#fff; font-weight:bold; margin-left:8px;">Reload</a>
+    <div id="blazor-error-ui" style="display:none; position:fixed; bottom:0; left:0; right:0; background:#EF4444; color:#fff; padding:12px; z-index:9999;">
+        An unhandled error has occurred in UniChrist mobile engine.
+        <a href="" style="color:#fff; font-weight:bold; margin-left:10px;">Reload</a>
     </div>
 
+    <!-- Standard Blazor WebView Interop Script -->
     <script src="_framework/blazor.webview.js"></script>
 </body>
 </html>

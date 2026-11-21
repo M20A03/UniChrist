@@ -2,6 +2,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using UniChrist.Mobile.Services;
 
+#if ANDROID
+using Android.Graphics;
+using Microsoft.AspNetCore.Components.WebView.Maui;
+#endif
+
 namespace UniChrist.Mobile;
 
 public static class MauiProgram
@@ -13,14 +18,32 @@ public static class MauiProgram
 
         // Register MAUI Blazor WebView
         builder.Services.AddMauiBlazorWebView();
+
+        // Enable developer tools unconditionally for diagnostic inspection via chrome://inspect
         builder.Services.AddBlazorWebViewDeveloperTools();
 
+        // =========================================================================
+        // DOMAIN D: NATIVE PLATFORM HANDLER & ANDROID WEBVIEW BACKGROUND OVERRIDE
+        // Forces native android.webkit.WebView to deep dark #080C14 at OS level
+        // =========================================================================
         builder.ConfigureMauiHandlers(handlers =>
         {
 #if ANDROID
-            Microsoft.Maui.Handlers.WebViewHandler.Mapper.AppendToMapping("CustomWebViewBackground", (handler, view) =>
+            BlazorWebViewHandler.BlazorWebViewMapper.AppendToMapping("UniChristDarkBackground", (handler, view) =>
             {
-                handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.ParseColor("#080C14"));
+                if (handler.PlatformView != null)
+                {
+                    handler.PlatformView.SetBackgroundColor(Color.ParseColor("#080C14"));
+                    
+                    // Enable remote webview debugging unconditionally
+                    Android.Webkit.WebView.SetWebContentsDebuggingEnabled(true);
+                    
+                    // Configure WebSettings
+                    handler.PlatformView.Settings.JavaScriptEnabled = true;
+                    handler.PlatformView.Settings.DomStorageEnabled = true;
+                    handler.PlatformView.Settings.AllowFileAccess = true;
+                    handler.PlatformView.Settings.AllowContentAccess = true;
+                }
             });
 #endif
         });

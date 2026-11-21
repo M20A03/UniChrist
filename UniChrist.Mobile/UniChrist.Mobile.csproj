@@ -2,9 +2,6 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>net9.0-android</TargetFrameworks>
-		<!-- Uncomment to support multiple platforms if required:
-		<TargetFrameworks>$(TargetFrameworks);net9.0-ios;net9.0-maccatalyst;net9.0-windows10.0.19041.0</TargetFrameworks>
-		-->
 		<OutputType>Exe</OutputType>
 		<RootNamespace>UniChrist.Mobile</RootNamespace>
 		<UseMaui>true</UseMaui>
@@ -13,10 +10,21 @@
 		<EnableDefaultCssItems>false</EnableDefaultCssItems>
 		<Nullable>enable</Nullable>
 
+		<!-- ========================================================================= -->
+		<!-- DOMAIN A: DISABLE AGGRESSIVE TRIMMING & AOT STRIPPING IN RELEASE BUILDS   -->
+		<!-- Prevents ILLink, R8, and ProGuard from stripping Razor & WebKit internals  -->
+		<!-- ========================================================================= -->
+		<PublishTrimmed>false</PublishTrimmed>
+		<RunAOTCompilation>false</RunAOTCompilation>
+		<AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+		<AndroidLinkMode>None</AndroidLinkMode>
+		<LinkMode>None</LinkMode>
+		<EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+
 		<!-- Disable EOL workload errors on CI -->
 		<CheckEolWorkloads>false</CheckEolWorkloads>
 		<CheckEolTargetFramework>false</CheckEolTargetFramework>
-		<NoWarn>$(NoWarn);NETSDK1202;NETSDK1138</NoWarn>
+		<NoWarn>$(NoWarn);NETSDK1202;NETSDK1138;IL2026;IL2091</NoWarn>
 
 		<!-- Display name and identifiers -->
 		<ApplicationTitle>UniChrist Portal</ApplicationTitle>
@@ -30,19 +38,19 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#0B0F19" />
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#080C14" />
 
 		<!-- Splash Screen -->
-		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#0B0F19" BaseSize="128,128" />
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#080C14" BaseSize="128,128" />
 
-		<!-- Raw Assets (including wwwroot) -->
+		<!-- Raw Assets -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="9.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" Condition="'$(Configuration)' == 'Debug'" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0" />
 		<PackageReference Include="System.Net.Http.Json" Version="9.0.0" />
 	</ItemGroup>
