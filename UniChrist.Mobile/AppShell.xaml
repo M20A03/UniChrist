@@ -12,9 +12,13 @@
     Shell.BackgroundColor="#080C14"
     Shell.ForegroundColor="#D4AF37"
     Shell.TitleColor="#F0F4F8"
-    Shell.UnselectedColor="#64748B">
+    Shell.UnselectedColor="#64748B"
+    Shell.TabBarBackgroundColor="#0B0F19"
+    Shell.TabBarForegroundColor="#D4AF37"
+    Shell.TabBarTitleColor="#F0F4F8"
+    Shell.TabBarUnselectedColor="#64748B">
 
-    <TabBar BackgroundColor="#0B0F19">
+    <TabBar>
         <Tab Title="Campus Hub">
             <ShellContent
                 Title="Campus Hub"
