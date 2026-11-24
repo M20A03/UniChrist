@@ -34,14 +34,16 @@ public static class MauiProgram
                 {
                     handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.ParseColor("#080C14"));
                     
-                    // Enable remote webview debugging unconditionally
+                    // Enable remote webview debugging unconditionally for chrome://inspect
                     Android.Webkit.WebView.SetWebContentsDebuggingEnabled(true);
                     
-                    // Configure WebSettings
+                    // Configure WebSettings for maximum compatibility
                     handler.PlatformView.Settings.JavaScriptEnabled = true;
                     handler.PlatformView.Settings.DomStorageEnabled = true;
+                    handler.PlatformView.Settings.DatabaseEnabled = true;
                     handler.PlatformView.Settings.AllowFileAccess = true;
                     handler.PlatformView.Settings.AllowContentAccess = true;
+                    handler.PlatformView.Settings.MixedContentMode = Android.Webkit.MixedContentHandling.AlwaysAllow;
                 }
             });
 #endif
