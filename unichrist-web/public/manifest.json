@@ -1,0 +1,17 @@
+{
+  "name": "CHRIST (Deemed to be University) - UniChrist Portal",
+  "short_name": "UniChrist",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#002147",
+  "theme_color": "#002147",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/images/app_icon_512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
