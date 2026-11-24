@@ -5,8 +5,15 @@
              x:Class="UniChrist.Mobile.App">
     <Application.Resources>
         <ResourceDictionary>
-            <Color x:Key="PrimaryDark">#0B0F19</Color>
-            <Color x:Key="AccentGold">#C5A059</Color>
+            <Color x:Key="PrimaryBackground">#080C14</Color>
+            <Color x:Key="CardBackground">#0E1424</Color>
+            <Color x:Key="BorderColor">#1E293B</Color>
+            <Color x:Key="AccentGold">#D4AF37</Color>
+            <Color x:Key="TextPrimary">#F0F4F8</Color>
+            <Color x:Key="TextSecondary">#94A3B8</Color>
+            <Color x:Key="AccentBlue">#3B82F6</Color>
+            <Color x:Key="AccentGreen">#10B981</Color>
+            <Color x:Key="AccentRed">#EF4444</Color>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

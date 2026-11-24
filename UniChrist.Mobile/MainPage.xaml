@@ -1,15 +1,162 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:b="clr-namespace:Microsoft.AspNetCore.Components.WebView.Maui;assembly=Microsoft.AspNetCore.Components.WebView.Maui"
-             xmlns:components="clr-namespace:UniChrist.Mobile.Components"
              x:Class="UniChrist.Mobile.MainPage"
              BackgroundColor="#080C14">
 
-    <b:BlazorWebView HostPage="wwwroot/index.html">
-        <b:BlazorWebView.RootComponents>
-            <b:RootComponent Selector="#app" ComponentType="{x:Type components:Routes}" />
-        </b:BlazorWebView.RootComponents>
-    </b:BlazorWebView>
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <!-- Hero Header with Crest and Branding -->
+            <Border Stroke="#1E293B" StrokeThickness="1" BackgroundColor="#0E1424" Padding="20">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                    <Label Text="CHRIST (DEEMED TO BE UNIVERSITY)" 
+                           TextColor="#D4AF37" 
+                           FontSize="12" 
+                           FontAttributes="Bold" 
+                           HorizontalTextAlignment="Center" 
+                           CharacterSpacing="1" />
+                    <Label Text="UniChrist Campus Portal" 
+                           TextColor="#F0F4F8" 
+                           FontSize="22" 
+                           FontAttributes="Bold" 
+                           HorizontalTextAlignment="Center" />
+                    <Label Text="Integrated Campus Life &amp; Location Services" 
+                           TextColor="#94A3B8" 
+                           FontSize="12" 
+                           HorizontalTextAlignment="Center" />
+                    <Label x:Name="StatusBadge"
+                           Text="System Active • Cloud Connected" 
+                           TextColor="#10B981" 
+                           FontSize="11" 
+                           HorizontalTextAlignment="Center" 
+                           Margin="0,6,0,0" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Campus Navigation / Faculty Location Module -->
+            <Border Stroke="#1E293B" StrokeThickness="1" BackgroundColor="#0E1424" Padding="16">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <HorizontalStackLayout Spacing="8">
+                        <BoxView Color="#D4AF37" WidthRequest="4" HeightRequest="18" VerticalOptions="Center" />
+                        <Label Text="FACULTY &amp; CLASSROOM RADAR" TextColor="#F0F4F8" FontSize="14" FontAttributes="Bold" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                    <Label Text="Locate professors and classrooms in real-time across Block I, Block II, and Central Campus." TextColor="#94A3B8" FontSize="12" />
+                    
+                    <Button x:Name="BtnFacultySearch"
+                            Text="Query Live Faculty Schedules" 
+                            BackgroundColor="#D4AF37" 
+                            TextColor="#080C14" 
+                            FontAttributes="Bold" 
+                            CornerRadius="8"
+                            Clicked="OnFacultySearchClicked" />
+
+                    <!-- Dynamic Results Area -->
+                    <VerticalStackLayout x:Name="FacultyResultsContainer" Spacing="8" Margin="0,8,0,0">
+                        <Label x:Name="FacultyResultsLabel" Text="Tap query to fetch live faculty coordinates..." TextColor="#64748B" FontSize="12" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Cafeteria & Pre-Ordering Module -->
+            <Border Stroke="#1E293B" StrokeThickness="1" BackgroundColor="#0E1424" Padding="16">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <HorizontalStackLayout Spacing="8">
+                        <BoxView Color="#3B82F6" WidthRequest="4" HeightRequest="18" VerticalOptions="Center" />
+                        <Label Text="CAMPUS CAFETERIAS &amp; KIOSKS" TextColor="#F0F4F8" FontSize="14" FontAttributes="Bold" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                    <Label Text="Live vendor menus, queue waiting indicators, and pre-order capabilities." TextColor="#94A3B8" FontSize="12" />
+                    
+                    <Button x:Name="BtnCafeteria"
+                            Text="Check Menus &amp; Vendor Status" 
+                            BackgroundColor="#1E293B" 
+                            TextColor="#D4AF37" 
+                            BorderColor="#D4AF37"
+                            BorderWidth="1"
+                            FontAttributes="Bold" 
+                            CornerRadius="8"
+                            Clicked="OnCafeteriaClicked" />
+
+                    <VerticalStackLayout x:Name="CafeteriaResultsContainer" Spacing="8" Margin="0,8,0,0">
+                        <Label x:Name="CafeteriaResultsLabel" Text="Browse active dining options across campus..." TextColor="#64748B" FontSize="12" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Grievance Redressal Module -->
+            <Border Stroke="#1E293B" StrokeThickness="1" BackgroundColor="#0E1424" Padding="16">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <HorizontalStackLayout Spacing="8">
+                        <BoxView Color="#EF4444" WidthRequest="4" HeightRequest="18" VerticalOptions="Center" />
+                        <Label Text="CONFIDENTIAL GRIEVANCE DESK" TextColor="#F0F4F8" FontSize="14" FontAttributes="Bold" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                    <Label Text="Submit academic, infrastructure, or maintenance tickets directly to campus authorities." TextColor="#94A3B8" FontSize="12" />
+                    
+                    <Button x:Name="BtnGrievance"
+                            Text="Submit or Track Grievance" 
+                            BackgroundColor="#1E293B" 
+                            TextColor="#F0F4F8" 
+                            FontAttributes="Bold" 
+                            CornerRadius="8"
+                            Clicked="OnGrievanceClicked" />
+
+                    <VerticalStackLayout x:Name="GrievanceContainer" Spacing="8" Margin="0,8,0,0">
+                        <Label x:Name="GrievanceStatusLabel" Text="Direct, encrypted grievance pipeline ready." TextColor="#64748B" FontSize="12" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Library OPAC Module -->
+            <Border Stroke="#1E293B" StrokeThickness="1" BackgroundColor="#0E1424" Padding="16">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <HorizontalStackLayout Spacing="8">
+                        <BoxView Color="#10B981" WidthRequest="4" HeightRequest="18" VerticalOptions="Center" />
+                        <Label Text="KNOWLEDGE COMMONS &amp; OPAC" TextColor="#F0F4F8" FontSize="14" FontAttributes="Bold" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                    <Label Text="Search Christ Central Library catalogue, check shelf availability, and reserve research materials." TextColor="#94A3B8" FontSize="12" />
+                    
+                    <Entry x:Name="LibrarySearchEntry" 
+                           Placeholder="Search by book title or author..." 
+                           PlaceholderColor="#64748B" 
+                           TextColor="#F0F4F8" 
+                           BackgroundColor="#080C14" />
+
+                    <Button x:Name="BtnLibrarySearch"
+                            Text="Search Catalogue" 
+                            BackgroundColor="#10B981" 
+                            TextColor="#080C14" 
+                            FontAttributes="Bold" 
+                            CornerRadius="8"
+                            Clicked="OnLibrarySearchClicked" />
+
+                    <VerticalStackLayout x:Name="LibraryResultsContainer" Spacing="8" Margin="0,8,0,0">
+                        <Label x:Name="LibraryResultsLabel" Text="Over 100,000+ titles indexed." TextColor="#64748B" FontSize="12" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Footer Details -->
+            <VerticalStackLayout Spacing="4" HorizontalOptions="Center" Margin="0,10,0,20">
+                <Label Text="CHRIST (Deemed to be University) • Bangalore Central Campus" TextColor="#64748B" FontSize="11" HorizontalTextAlignment="Center" />
+                <Label Text="UniChrist Native Mobile Engine v1.0.0" TextColor="#475569" FontSize="10" HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
 
 </ContentPage>
