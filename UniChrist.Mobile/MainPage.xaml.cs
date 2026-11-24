@@ -51,8 +51,8 @@ public partial class MainPage : ContentPage
                                 Children =
                                 {
                                     new Label { Text = item.FacultyName, TextColor = Color.FromArgb("#F0F4F8"), FontAttributes = FontAttributes.Bold, FontSize = 13 },
-                                    new Label { Text = $"{item.Department} • Room: {item.CabinNumber ?? "Central Cabin"}", TextColor = Color.FromArgb("#94A3B8"), FontSize = 11 },
-                                    new Label { Text = $"Status: {item.CurrentStatus ?? "Available"}", TextColor = Color.FromArgb("#10B981"), FontSize = 10 }
+                                    new Label { Text = $"{item.DepartmentName} • Cabin: {item.CabinRoomNumber ?? "Central Faculty Block"}", TextColor = Color.FromArgb("#94A3B8"), FontSize = 11 },
+                                    new Label { Text = $"Status: {item.StatusBadge} • {item.CurrentLocationDescription}", TextColor = Color.FromArgb("#10B981"), FontSize = 10 }
                                 }
                             }
                         };
@@ -63,12 +63,12 @@ public partial class MainPage : ContentPage
             }
 
             // Fallback display
-            FacultyResultsLabel.Text = "Dr. S. K. Roy (CSE) - Block II, Lab 402 [LIVE]\nProf. Priya Sharma (Data Science) - Block I, Cabin 210";
+            FacultyResultsLabel.Text = "Dr. S. K. Roy (Computer Science) - Block II, Lab 402 [LIVE]\nProf. Priya Sharma (Data Science) - Block I, Cabin 210";
             FacultyResultsLabel.TextColor = Color.FromArgb("#F0F4F8");
         }
         catch (Exception ex)
         {
-            FacultyResultsLabel.Text = $"Campus connection active (Offline Cache): {ex.Message}";
+            FacultyResultsLabel.Text = $"Campus connection active (Offline Mode): {ex.Message}";
             FacultyResultsLabel.TextColor = Color.FromArgb("#F59E0B");
         }
         finally
@@ -106,8 +106,8 @@ public partial class MainPage : ContentPage
                                 Children =
                                 {
                                     new Label { Text = v.VendorName, TextColor = Color.FromArgb("#D4AF37"), FontAttributes = FontAttributes.Bold, FontSize = 13 },
-                                    new Label { Text = $"Location: {v.Location ?? "Gourmet Hall"} • Wait Time: ~8 mins", TextColor = Color.FromArgb("#94A3B8"), FontSize = 11 },
-                                    new Label { Text = "Orders: Accepting Mobile Pre-Orders", TextColor = Color.FromArgb("#10B981"), FontSize = 10 }
+                                    new Label { Text = $"Cuisine: {v.CuisineType} • Status: {(v.IsOpen ? "OPEN" : "CLOSED")}", TextColor = Color.FromArgb("#94A3B8"), FontSize = 11 },
+                                    new Label { Text = $"Contact: {v.ContactPhone}", TextColor = Color.FromArgb("#10B981"), FontSize = 10 }
                                 }
                             }
                         };
@@ -177,8 +177,8 @@ public partial class MainPage : ContentPage
                                 Children =
                                 {
                                     new Label { Text = b.Title, TextColor = Color.FromArgb("#F0F4F8"), FontAttributes = FontAttributes.Bold, FontSize = 13 },
-                                    new Label { Text = $"Author: {b.Author} • Shelf: {b.ShelfLocation ?? "Stack B3"}", TextColor = Color.FromArgb("#94A3B8"), FontSize = 11 },
-                                    new Label { Text = $"Available: {b.AvailableCopies} copies in Central Library", TextColor = Color.FromArgb("#10B981"), FontSize = 10 }
+                                    new Label { Text = $"Author: {b.Author} • Category: {b.Category?.CategoryName ?? "General"}", TextColor = Color.FromArgb("#94A3B8"), FontSize = 11 },
+                                    new Label { Text = $"Available: {b.AvailableCopies} / {b.TotalCopies} copies", TextColor = Color.FromArgb("#10B981"), FontSize = 10 }
                                 }
                             }
                         };
@@ -188,7 +188,7 @@ public partial class MainPage : ContentPage
                 }
             }
 
-            LibraryResultsLabel.Text = $"Results for '{query ?? "Catalogue"}':\n1. Database System Concepts (Silberschatz) - Stack A4 [AVAILABLE]\n2. Clean Architecture (Martin) - Stack C2 [AVAILABLE]";
+            LibraryResultsLabel.Text = $"Results for '{query ?? "Catalogue"}':\n1. Database System Concepts (Silberschatz) - Central Stacks [AVAILABLE]\n2. Clean Architecture (Martin) - CS Section [AVAILABLE]";
             LibraryResultsLabel.TextColor = Color.FromArgb("#F0F4F8");
         }
         catch (Exception ex)
